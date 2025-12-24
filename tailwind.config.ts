@@ -57,6 +57,25 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // Custom children's theme colors
+        pink: {
+          soft: "hsl(var(--pink-soft))",
+          light: "hsl(var(--pink-light))",
+        },
+        beige: {
+          DEFAULT: "hsl(var(--beige))",
+          warm: "hsl(var(--beige-warm))",
+        },
+        lavender: {
+          DEFAULT: "hsl(var(--lavender))",
+          light: "hsl(var(--lavender-light))",
+        },
+        mint: "hsl(var(--mint))",
+        coral: "hsl(var(--coral))",
+        sunny: "hsl(var(--sunny))",
+      },
+      fontFamily: {
+        arabic: ["Noto Sans Arabic", "Tajawal", "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
