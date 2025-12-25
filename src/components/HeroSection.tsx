@@ -1,10 +1,22 @@
 import bilsanImage from "@/assets/bilsan-hero.png";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { scrollToSection } from "@/hooks/useScrollAnimation";
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+
+  const handleEnroll = () => {
+    navigate("/auth");
+  };
+
+  const handleLearnMore = () => {
+    scrollToSection("about");
+  };
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-pink-light via-background to-lavender-light pt-20">
+    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-pink-light via-background to-lavender-light pt-20">
       {/* Decorative elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-10 right-10 w-20 h-20 bg-sunny/30 rounded-full blur-2xl animate-pulse" />
@@ -21,7 +33,7 @@ const HeroSection = () => {
       <div className="container mx-auto px-4 py-12 relative z-10">
         <div className="flex flex-col-reverse lg:flex-row items-center justify-between gap-8 lg:gap-12">
           {/* Content */}
-          <div className="text-center lg:text-right flex-1 max-w-2xl">
+          <div className="text-center lg:text-right flex-1 max-w-2xl animate-fade-in">
             <div className="inline-flex items-center gap-2 bg-card/80 backdrop-blur-sm px-4 py-2 rounded-full mb-6 shadow-sm">
               <span className="text-2xl">🌸</span>
               <span className="text-sm font-medium text-muted-foreground font-arabic">
@@ -41,6 +53,7 @@ const HeroSection = () => {
               <Button 
                 size="lg" 
                 className="text-lg font-arabic px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 bg-primary hover:bg-primary/90"
+                onClick={handleEnroll}
               >
                 <Sparkles className="ml-2 w-5 h-5" />
                 ابدأ التعلّم الآن
@@ -49,6 +62,7 @@ const HeroSection = () => {
                 variant="outline" 
                 size="lg" 
                 className="text-lg font-arabic px-8 py-6 rounded-full border-2 border-primary/30 hover:bg-primary/10 transition-all duration-300"
+                onClick={handleLearnMore}
               >
                 تعرّف على المنصة
               </Button>
@@ -74,7 +88,7 @@ const HeroSection = () => {
           </div>
 
           {/* Character Image */}
-          <div className="relative w-full max-w-xs sm:max-w-sm lg:max-w-md xl:max-w-lg flex-shrink-0">
+          <div className="relative w-full max-w-xs sm:max-w-sm lg:max-w-md xl:max-w-lg flex-shrink-0 animate-scale-in">
             <div className="relative animate-float">
               <img
                 src={bilsanImage}

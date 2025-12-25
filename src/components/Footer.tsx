@@ -1,20 +1,26 @@
 import { Heart, Mail, Phone, MapPin } from "lucide-react";
+import { scrollToSection } from "@/hooks/useScrollAnimation";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
+  const handleScrollLink = (sectionId: string) => {
+    scrollToSection(sectionId);
+  };
+
   const links = {
     main: [
-      { label: "الصفحة الرئيسية", href: "#" },
-      { label: "عن بيلسان", href: "#about" },
-      { label: "المحتوى التعليمي", href: "#content" },
-      { label: "تسجيل الدخول", href: "#login" },
+      { label: "الصفحة الرئيسية", sectionId: "hero" },
+      { label: "عن بيلسان", sectionId: "about" },
+      { label: "المحتوى التعليمي", sectionId: "content" },
+      { label: "كيف نتعلم", sectionId: "how-we-learn" },
     ],
     resources: [
-      { label: "الكتب التعليمية", href: "#" },
-      { label: "الألعاب", href: "#" },
-      { label: "أوراق العمل", href: "#" },
-      { label: "الفيديوهات", href: "#" },
+      { label: "الكتب التعليمية", sectionId: "content" },
+      { label: "الألعاب", sectionId: "content" },
+      { label: "أوراق العمل", sectionId: "content" },
+      { label: "الفيديوهات", sectionId: "features" },
     ],
     support: [
       { label: "الأسئلة الشائعة", href: "#" },
@@ -59,14 +65,22 @@ const Footer = () => {
             <ul className="space-y-3">
               {links.main.map((link) => (
                 <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="text-muted-foreground hover:text-primary transition-colors font-arabic"
+                  <button
+                    onClick={() => handleScrollLink(link.sectionId)}
+                    className="text-muted-foreground hover:text-primary transition-colors font-arabic text-right"
                   >
                     {link.label}
-                  </a>
+                  </button>
                 </li>
               ))}
+              <li>
+                <Link
+                  to="/auth"
+                  className="text-muted-foreground hover:text-primary transition-colors font-arabic"
+                >
+                  تسجيل الدخول
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -75,14 +89,14 @@ const Footer = () => {
               المحتوى
             </h4>
             <ul className="space-y-3">
-              {links.resources.map((link) => (
-                <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="text-muted-foreground hover:text-primary transition-colors font-arabic"
+              {links.resources.map((link, index) => (
+                <li key={index}>
+                  <button
+                    onClick={() => handleScrollLink(link.sectionId)}
+                    className="text-muted-foreground hover:text-primary transition-colors font-arabic text-right"
                   >
                     {link.label}
-                  </a>
+                  </button>
                 </li>
               ))}
             </ul>

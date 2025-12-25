@@ -1,9 +1,22 @@
-import { Play } from "lucide-react";
+import { useEffect } from "react";
 import robotMascot from "@/assets/robot-mascot.png";
+import { useScrollAnimation, playSound } from "@/hooks/useScrollAnimation";
 
 const FeaturesSection = () => {
+  const { ref, isVisible } = useScrollAnimation({ threshold: 0.2 });
+
+  useEffect(() => {
+    if (isVisible) {
+      playSound('chime');
+    }
+  }, [isVisible]);
+
   return (
-    <section className="py-20 bg-gradient-to-b from-background to-lavender-light relative overflow-hidden">
+    <section 
+      id="features"
+      ref={ref as React.RefObject<HTMLElement>}
+      className="py-20 bg-gradient-to-b from-background to-lavender-light relative overflow-hidden"
+    >
       {/* Decorative elements */}
       <div className="absolute inset-0 pointer-events-none">
         <img 
@@ -30,7 +43,7 @@ const FeaturesSection = () => {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-12">
+        <div className={`text-center mb-12 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <span className="inline-block text-primary text-sm font-medium mb-3 font-arabic bg-pink-light/50 px-4 py-1 rounded-full">
             شاهد كيف نعمل
           </span>
@@ -43,7 +56,7 @@ const FeaturesSection = () => {
         </div>
 
         {/* Video Frame */}
-        <div className="max-w-4xl mx-auto">
+        <div className={`max-w-4xl mx-auto transition-all duration-700 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <div className="relative bg-card rounded-3xl shadow-xl overflow-hidden border border-border/30">
             {/* Browser-like header */}
             <div className="bg-muted px-4 py-3 flex items-center gap-2 border-b border-border/30">
@@ -68,13 +81,6 @@ const FeaturesSection = () => {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
-              
-              {/* Optional: Overlay play button for thumbnail mode */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 hover:opacity-100 transition-opacity">
-                <div className="w-20 h-20 bg-primary/90 rounded-full flex items-center justify-center shadow-lg">
-                  <Play className="w-8 h-8 text-primary-foreground fill-current mr-[-4px]" />
-                </div>
-              </div>
             </div>
           </div>
         </div>
