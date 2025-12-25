@@ -1,22 +1,18 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
-import AboutSection from "@/components/AboutSection";
-import ContentSection from "@/components/ContentSection";
+import TeacherToolsSection from "@/components/TeacherToolsSection";
 import FeaturesSection from "@/components/FeaturesSection";
-import HowWeLearnSection from "@/components/HowWeLearnSection";
 import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
 
-const Index = () => {
+const Teacher = () => {
   return (
     <div className="min-h-screen bg-background font-arabic">
       <Navbar />
       <main>
         <HeroSection />
-        <AboutSection />
-        <ContentSection />
+        <TeacherToolsSection />
         <FeaturesSection />
-        <HowWeLearnSection />
         <CTASection />
       </main>
       <Footer />
@@ -24,4 +20,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Teacher;

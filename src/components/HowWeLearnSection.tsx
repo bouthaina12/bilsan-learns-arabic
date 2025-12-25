@@ -1,7 +1,9 @@
+import { useEffect } from "react";
 import step1Image from "@/assets/step-1-reading.png";
 import step2Image from "@/assets/step-2-games.png";
 import step3Image from "@/assets/step-3-trophy.png";
 import robotMascot from "@/assets/robot-mascot.png";
+import { useScrollAnimation, playSound } from "@/hooks/useScrollAnimation";
 
 const steps = [
   {
@@ -27,8 +29,20 @@ const steps = [
 const arabicLetters = ["ا", "ب", "ت", "ث", "ج", "ح"];
 
 const HowWeLearnSection = () => {
+  const { ref, isVisible } = useScrollAnimation({ threshold: 0.2 });
+
+  useEffect(() => {
+    if (isVisible) {
+      playSound('whoosh');
+    }
+  }, [isVisible]);
+
   return (
-    <section className="py-20 bg-gradient-to-b from-lavender-light to-background relative overflow-hidden">
+    <section 
+      id="how-we-learn"
+      ref={ref as React.RefObject<HTMLElement>}
+      className="py-20 bg-gradient-to-b from-lavender-light to-background relative overflow-hidden"
+    >
       {/* Background decorations */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Robot decorations */}
@@ -71,7 +85,7 @@ const HowWeLearnSection = () => {
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className={`text-center mb-16 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <div className="inline-block mb-4">
             <span className="text-sunny text-3xl">✦</span>
           </div>
@@ -82,10 +96,13 @@ const HowWeLearnSection = () => {
 
         {/* Steps */}
         <div className="grid md:grid-cols-3 gap-8 lg:gap-12 max-w-6xl mx-auto">
-          {steps.map((step) => (
+          {steps.map((step, index) => (
             <div 
               key={step.number} 
-              className="relative text-center group"
+              className={`relative text-center group transition-all duration-700 ${
+                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+              }`}
+              style={{ transitionDelay: `${index * 200}ms` }}
             >
               {/* Step Number Badge */}
               <div className="absolute top-0 right-1/2 translate-x-1/2 md:right-4 md:translate-x-0 -translate-y-4 z-20">

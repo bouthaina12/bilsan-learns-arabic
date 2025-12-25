@@ -1,4 +1,6 @@
 import { BookOpen, Heart, Globe, Sparkles } from "lucide-react";
+import { useEffect } from "react";
+import { useScrollAnimation, playSound } from "@/hooks/useScrollAnimation";
 
 const features = [
   {
@@ -28,8 +30,20 @@ const features = [
 ];
 
 const AboutSection = () => {
+  const { ref, isVisible } = useScrollAnimation({ threshold: 0.2 });
+
+  useEffect(() => {
+    if (isVisible) {
+      playSound('whoosh');
+    }
+  }, [isVisible]);
+
   return (
-    <section className="py-20 bg-card relative overflow-hidden">
+    <section 
+      id="about" 
+      ref={ref as React.RefObject<HTMLElement>}
+      className="py-20 bg-card relative overflow-hidden"
+    >
       {/* Decorative background */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 left-0 w-64 h-64 bg-pink-light/30 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
@@ -37,7 +51,7 @@ const AboutSection = () => {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center mb-16">
+        <div className={`text-center mb-16 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <span className="inline-block text-primary text-sm font-medium mb-3 font-arabic bg-pink-light/50 px-4 py-1 rounded-full">
             عن منصتنا
           </span>
@@ -54,7 +68,10 @@ const AboutSection = () => {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="group bg-background rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-border/50"
+              className={`group bg-background rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all duration-500 hover:-translate-y-1 border border-border/50 ${
+                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+              }`}
+              style={{ transitionDelay: `${index * 100}ms` }}
             >
               <div className={`w-14 h-14 ${feature.color} rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300`}>
                 <feature.icon className="w-7 h-7" />

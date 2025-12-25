@@ -1,13 +1,25 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Globe } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { scrollToSection } from "@/hooks/useScrollAnimation";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [language, setLanguage] = useState<"ar" | "de">("ar");
+  const navigate = useNavigate();
 
   const toggleLanguage = () => {
     setLanguage(language === "ar" ? "de" : "ar");
+  };
+
+  const handleLogin = () => {
+    navigate("/auth");
+  };
+
+  const handleNavClick = (sectionId: string) => {
+    setIsOpen(false);
+    scrollToSection(sectionId);
   };
 
   return (
@@ -15,21 +27,33 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <a href="#" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2">
             <span className="text-2xl">🌸</span>
             <span className="text-xl md:text-2xl font-bold text-primary font-arabic">
               بيلسان
             </span>
-          </a>
+          </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
-            <a
-              href="#"
+          <div className="hidden md:flex items-center gap-6">
+            <button
+              onClick={() => handleNavClick("hero")}
               className="text-foreground hover:text-primary transition-colors font-arabic font-medium"
             >
               الرئيسية
-            </a>
+            </button>
+            <Link
+              to="/student"
+              className="text-foreground hover:text-primary transition-colors font-arabic font-medium"
+            >
+              الطالب
+            </Link>
+            <Link
+              to="/teacher"
+              className="text-foreground hover:text-primary transition-colors font-arabic font-medium"
+            >
+              المعلم
+            </Link>
           </div>
 
           {/* CTA Buttons */}
@@ -46,6 +70,7 @@ const Navbar = () => {
             <Button
               variant="ghost"
               className="font-arabic hover:bg-primary/10"
+              onClick={handleLogin}
             >
               تسجيل الدخول
             </Button>
@@ -63,15 +88,28 @@ const Navbar = () => {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden py-4 border-t border-border/50">
+          <div className="md:hidden py-4 border-t border-border/50 animate-fade-in">
             <div className="flex flex-col gap-4">
-              <a
-                href="#"
+              <button
+                onClick={() => handleNavClick("hero")}
+                className="text-foreground hover:text-primary transition-colors font-arabic font-medium py-2 text-right"
+              >
+                الرئيسية
+              </button>
+              <Link
+                to="/student"
                 className="text-foreground hover:text-primary transition-colors font-arabic font-medium py-2"
                 onClick={() => setIsOpen(false)}
               >
-                الرئيسية
-              </a>
+                الطالب
+              </Link>
+              <Link
+                to="/teacher"
+                className="text-foreground hover:text-primary transition-colors font-arabic font-medium py-2"
+                onClick={() => setIsOpen(false)}
+              >
+                المعلم
+              </Link>
               <div className="flex flex-col gap-2 pt-4 border-t border-border/50">
                 <Button
                   variant="outline"
@@ -85,6 +123,7 @@ const Navbar = () => {
                 <Button
                   variant="ghost"
                   className="font-arabic justify-start"
+                  onClick={handleLogin}
                 >
                   تسجيل الدخول
                 </Button>
