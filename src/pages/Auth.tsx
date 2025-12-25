@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { User, Lock, Mail, Phone, ArrowRight, Eye, EyeOff } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import loginMascot from "@/assets/login-mascot.png";
 
 type UserType = "teacher" | "student";
@@ -14,6 +14,7 @@ const Auth = () => {
   const [userType, setUserType] = useState<UserType>("student");
   const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -30,8 +31,12 @@ const Auth = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log("Form submitted:", { userType, authMode, formData });
+    // Navigate to appropriate dashboard based on user type
+    if (userType === "teacher") {
+      navigate("/teacher-dashboard");
+    } else {
+      navigate("/student-dashboard");
+    }
   };
 
   const isTeacher = userType === "teacher";
