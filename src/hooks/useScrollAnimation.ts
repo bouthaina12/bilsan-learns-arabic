@@ -41,11 +41,17 @@ export const useScrollAnimation = (options: UseScrollAnimationOptions = {}) => {
 
 // Smooth scroll to section
 export const scrollToSection = (sectionId: string) => {
+  // If we're not on the homepage, navigate there first
+  if (window.location.pathname !== '/') {
+    window.location.href = `/#${sectionId}`;
+    return;
+  }
+  
   const element = document.getElementById(sectionId);
   if (element) {
     const navbarHeight = 80;
     const elementPosition = element.getBoundingClientRect().top;
-    const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+    const offsetPosition = elementPosition + window.scrollY - navbarHeight;
 
     window.scrollTo({
       top: offsetPosition,

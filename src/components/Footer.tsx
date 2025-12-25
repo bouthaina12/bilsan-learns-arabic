@@ -1,12 +1,22 @@
 import { Heart, Mail, Phone, MapPin } from "lucide-react";
 import { scrollToSection } from "@/hooks/useScrollAnimation";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const navigate = useNavigate();
 
   const handleScrollLink = (sectionId: string) => {
-    scrollToSection(sectionId);
+    // If on homepage, scroll directly
+    if (window.location.pathname === '/') {
+      scrollToSection(sectionId);
+    } else {
+      // Navigate to home then scroll
+      navigate('/');
+      setTimeout(() => {
+        scrollToSection(sectionId);
+      }, 100);
+    }
   };
 
   const links = {
@@ -21,12 +31,6 @@ const Footer = () => {
       { label: "الألعاب", sectionId: "content" },
       { label: "أوراق العمل", sectionId: "content" },
       { label: "الفيديوهات", sectionId: "features" },
-    ],
-    support: [
-      { label: "الأسئلة الشائعة", href: "#" },
-      { label: "تواصل معنا", href: "#" },
-      { label: "سياسة الخصوصية", href: "#" },
-      { label: "الشروط والأحكام", href: "#" },
     ],
   };
 
