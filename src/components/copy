@@ -1,0 +1,396 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Card } from "@/components/ui/card";
+import { 
+  Puzzle, Trophy, Star, Play, TrendingUp, 
+  Clock, Users, Award, Zap, Sparkles, Gamepad2
+} from 'lucide-react';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
+import { playSound } from "@/hooks/useScrollAnimation";
+
+// استيراد الصور (تأكد من وجودها في المسارات التالية)
+import puzzlePreview from '@/assets/images/preview.jpg';
+import flashcardsPreview from '@/assets/images/flashcards-preview.jpg';
+
+
+interface Game {
+  id: number;
+  title: string;
+  description: string;
+  icon: string;
+  category: string;
+  difficulty: 'easy' | 'medium' | 'hard';
+  points: number;
+  estimatedTime: string;
+  completed: boolean;
+  highScore?: number;
+  image: any; // تغيير من imagePath إلى image
+}
+
+interface GameStat {
+  totalGames: number;
+  completedGames: number;
+  totalPoints: number;
+  averageScore: number;
+  favoriteGame: string;
+}
+
+const GamesPage = () => {
+  const navigate = useNavigate();
+  const userData = localStorage.getItem('user');
+  const user = userData ? JSON.parse(userData) : null;
+
+  const [games, setGames] = useState<Game[]>([
+    {
+      id: 1,
+      title: 'لعبة الصور المتزلقة',
+      description: 'رتب قطع الصورة المتزلقة لتشكيل صورة كاملة واكتشف الكلمة المخفية',
+      icon: 'puzzle',
+      category: 'ألعاب التفكير',
+      difficulty: 'medium',
+      points: 100,
+      estimatedTime: '5-10 دقائق',
+      completed: false,
+      highScore: 0,
+      image: puzzlePreview
+    },
+    {
+      id: 2,
+      title: 'البطاقات التعليمية',
+      description: 'تعلم كلمات جديدة من خلال بطاقات تعليمية تفاعلية مع صور ونطق',
+      icon: 'cards',
+      category: 'ألعاب التعلم',
+      difficulty: 'easy',
+      points: 80,
+      estimatedTime: '3-5 دقائق',
+      completed: false,
+      highScore: 0,
+      image: flashcardsPreview
+    },
+    
+  ]);
+
+  const [stats, setStats] = useState<GameStat>({
+    totalGames: 6,
+    completedGames: 0,
+    totalPoints: 0,
+    averageScore: 0,
+    favoriteGame: 'لم تلعب بعد'
+  });
+
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+  // صور بديلة للألعاب التي ليس لها صور
+  const defaultGameImages = [
+    'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h-300&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=400&h=300&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=300&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&h=300&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1534423861386-85a16f5d13fd?w=400&h=300&fit=crop&auto=format',
+    'https://images.unsplash.com/photo-1589256469067-ea99122bbdc4?w=400&h=300&fit=crop&auto=format'
+  ];
+
+  useEffect(() => {
+    if (!user) {
+      window.location.href = '/login';
+      return;
+    }
+
+    // تحميل إحصائيات الألعاب من localStorage
+    const savedStats = localStorage.getItem(`game-stats-${user.id}`);
+    if (savedStats) {
+      setStats(JSON.parse(savedStats));
+    }
+
+    // تحميل حالة الألعاب من localStorage (بدون الصور)
+    const savedGames = localStorage.getItem(`games-progress-${user.id}`);
+    if (savedGames) {
+      const parsedGames = JSON.parse(savedGames);
+      // إضافة الصور للالعاب المحملة
+      const gamesWithImages = parsedGames.map((game: Game, index: number) => ({
+        ...game,
+        image: games[index]?.image || defaultGameImages[index]
+      }));
+      setGames(gamesWithImages);
+    }
+
+    playSound('click');
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      // حفظ الألعاب بدون الصور (لأن الصور لا يمكن تخزينها في localStorage)
+      const gamesWithoutImages = games.map(({ image, ...rest }) => rest);
+      localStorage.setItem(`games-progress-${user.id}`, JSON.stringify(gamesWithoutImages));
+      
+      // تحديث الإحصائيات
+      const completedGames = games.filter(game => game.completed).length;
+      const totalPoints = games.reduce((sum, game) => sum + (game.highScore || 0), 0);
+      const averageScore = completedGames > 0 ? Math.round(totalPoints / completedGames) : 0;
+      
+      const favoriteGame = games.length > 0 
+        ? games.reduce((prev, current) => 
+            (prev.highScore || 0) > (current.highScore || 0) ? prev : current
+          ).title
+        : 'لم تلعب بعد';
+
+      setStats({
+        totalGames: games.length,
+        completedGames,
+        totalPoints,
+        averageScore,
+        favoriteGame
+      });
+
+      localStorage.setItem(`game-stats-${user.id}`, JSON.stringify(stats));
+    }
+  }, [games]);
+
+  const filteredGames = selectedCategory === 'all' 
+    ? games 
+    : games.filter(game => game.category === selectedCategory);
+
+  const categories = ['all', 'ألعاب التفكير', 'ألعاب التعلم', 'ألعاب السرعة', 'ألعاب الذاكرة', 'ألعاب اللغة', 'ألعاب البحث'];
+
+  const getIcon = (iconName: string) => {
+    switch (iconName) {
+      case 'puzzle': return <Puzzle className="w-6 h-6" />;
+      case 'cards': return <Card className="w-6 h-6" />;
+      case 'zap': return <Zap className="w-6 h-6" />;
+      case 'sparkles': return <Sparkles className="w-6 h-6" />;
+      case 'trendingUp': return <TrendingUp className="w-6 h-6" />;
+      default: return <Gamepad2 className="w-6 h-6" />;
+    }
+  };
+
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case 'easy': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
+      case 'medium': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
+      case 'hard': return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
+      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300';
+    }
+  };
+
+  const handlePlayGame = (gameId: number) => {
+    playSound('click');
+    
+    switch (gameId) {
+      case 1:
+        navigate('/student-dashboard/games/puzzle');
+        break;
+      case 2:
+        navigate('/student-dashboard/games/flashcards');
+        break;
+      case 3:
+        navigate('/student-dashboard/games/word-race');
+        break;
+      case 4:
+        navigate('/student-dashboard/games/memory');
+        break;
+      default:
+        playSound('wrong');
+        alert('اللعبة قيد التطوير!');
+    }
+  };
+
+  if (!user) return null;
+
+  return (
+    <SidebarProvider>
+      <div className="min-h-screen w-full bg-gradient-to-br from-pink-50 to-pink-50 dark:from-gray-900 dark:to-gray-800 font-arabic" dir="rtl">
+        <div className="fixed right-0 top-0 h-screen z-40 w-64">
+          <DashboardSidebar 
+            userType="student" 
+            userName={user?.username}
+            progress={65} 
+          />
+        </div>
+
+        <div className="mr-64 min-h-screen">
+          
+{/* Header */}
+          <header className="bg-white shadow-sm border-b">
+            <div className="px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                
+                <h1 className="text-2xl font-bold text-primary"> 
+                    ألعاب تعليمية</h1>
+                 
+              </div>
+              
+              
+            </div>
+          </header>
+          <main className="p-6">
+           
+
+            {/* تصفية حسب الفئة */}
+            <div className="mb-8">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">تصفية حسب الفئة</h2>
+              <div className="flex flex-wrap gap-2">
+                {categories.map(category => (
+                  <Button
+                    key={category}
+                    variant={selectedCategory === category ? "default" : "outline"}
+                    onClick={() => {
+                      playSound('click');
+                      setSelectedCategory(category);
+                    }}
+                    className={`${
+                      selectedCategory === category 
+                        ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white' 
+                        : ''
+                    }`}
+                  >
+                    {category === 'all' ? 'جميع الألعاب' : category}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* قائمة الألعاب */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredGames.map((game, index) => (
+                <Card 
+                  key={game.id} 
+                  className={`group border-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl overflow-hidden ${
+                    game.completed 
+                      ? 'border-green-500 dark:border-green-400' 
+                      : 'border-transparent'
+                  }`}
+                >
+                  {/* صورة اللعبة */}
+                  <div className="relative h-48 overflow-hidden bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30">
+                    {game.image && typeof game.image === 'string' ? (
+                      <img
+                        src={game.image}
+                        alt={game.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = defaultGameImages[index] || defaultGameImages[0];
+                        }}
+                      />
+                    ) : game.image ? (
+                      <img
+                        src={game.image}
+                        alt={game.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-200 to-purple-200">
+                        <span className="text-4xl font-bold text-indigo-600 dark:text-indigo-400">
+                          {game.icon === 'puzzle' ? '🧩' : 
+                           game.icon === 'cards' ? '🎴' :
+                           game.icon === 'zap' ? '⚡' :
+                           game.icon === 'sparkles' ? '✨' : '🎮'}
+                        </span>
+                      </div>
+                    )}
+                    <div className="absolute top-3 right-3">
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getDifficultyColor(game.difficulty)}`}>
+                        {game.difficulty === 'easy' ? 'سهل' : game.difficulty === 'medium' ? 'متوسط' : 'صعب'}
+                      </span>
+                    </div>
+                    {game.completed && (
+                      <div className="absolute top-3 left-3">
+                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                          مكتمل
+                        </span>
+                      </div>
+                    )}
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+                      <h3 className="font-bold text-lg text-white">{game.title}</h3>
+                      <p className="text-white/90 text-sm mt-1">{game.category}</p>
+                    </div>
+                  </div>
+
+                  <div className="p-5">
+                    <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm">{game.description}</p>
+
+                    <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4" />
+                        <span>{game.estimatedTime}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1">
+                          <Star className="w-4 h-4 text-amber-500" />
+                          <span className="font-bold text-amber-600 dark:text-amber-400">{game.points}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {game.highScore && game.highScore > 0 && (
+                      <div className="mb-4 p-3 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-amber-800 dark:text-amber-300">أعلى نتيجة</span>
+                          <span className="text-lg font-bold text-amber-900 dark:text-amber-200">{game.highScore}</span>
+                        </div>
+                      </div>
+                    )}
+
+                    <Button
+                      onClick={() => handlePlayGame(game.id)}
+                      className="w-full group-hover:bg-gradient-to-r group-hover:from-indigo-600 group-hover:to-purple-600"
+                      size="lg"
+                    >
+                      <Play className="w-4 h-4 ml-2" />
+                      {game.completed ? 'العب مرة أخرى' : 'العب الآن'}
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            {/* التعليمات */}
+            <div className="mt-12">
+              <Card className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border-0 p-6">
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-3">
+                  <Sparkles className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+                  كيف تلعب وتكسب؟
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full flex items-center justify-center text-white font-bold">1</div>
+                      <h3 className="font-bold text-gray-800 dark:text-white">اختر لعبة</h3>
+                    </div>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm">
+                      اختر من مجموعة ألعابنا التعليمية المناسبة لمستواك
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full flex items-center justify-center text-white font-bold">2</div>
+                      <h3 className="font-bold text-gray-800 dark:text-white">العب وتعلم</h3>
+                    </div>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm">
+                      استمتع باللعبة وتعلم مهارات جديدة بطريقة ممتعة
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full flex items-center justify-center text-white font-bold">3</div>
+                      <h3 className="font-bold text-gray-800 dark:text-white">اكسب نقاطاً</h3>
+                    </div>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm">
+                      احصل على نقاط ومكافآت وارفع مستوى مهاراتك
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </main>
+        </div>
+      </div>
+    </SidebarProvider>
+  );
+};
+
+export default GamesPage;

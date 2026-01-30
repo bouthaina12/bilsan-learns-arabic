@@ -11,22 +11,21 @@ import { useScrollAnimation, playSound } from "@/hooks/useScrollAnimation";
 const contentItems = [
   {
     title: "كتب تعليمية",
-    description: "قصص وكتب تفاعلية مصوّرة بمستويات متدرّجة",
     image: contentBooks,
   },
   {
     title: "كرتون تعليمي",
-    description: "فيديوهات كرتونية ممتعة لتعلّم اللغة",
+   
     image: contentCartoon,
   },
   {
     title: "ألعاب تعليمية",
-    description: "ألعاب تفاعلية لتثبيت المفردات والقواعد",
+    
     image: contentGames,
   },
   {
     title: "أوراق عمل",
-    description: "أوراق عمل قابلة للتحميل والطباعة",
+    
     image: contentWorksheets,
   },
 ];
@@ -36,15 +35,15 @@ const arabicAlphabet = [
 ];
 
 const PhoneFrame = ({ image, title }: { image: string; title: string }) => (
-  <div className="relative mx-auto w-[200px] md:w-[240px] flex-shrink-0">
-    {/* Phone Frame */}
-    <div className="relative bg-foreground rounded-[2rem] p-1.5 shadow-2xl">
+  <div className="relative mx-auto w-[280px] md:w-[320px] flex-shrink-0">
+    {/* Phone Frame - Horizontal */}
+    <div className="relative bg-foreground rounded-[2rem] p-2 shadow-2xl">
       {/* Screen */}
       <div className="relative bg-background rounded-[1.75rem] overflow-hidden">
-        {/* Notch */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-4 bg-foreground rounded-b-xl z-10" />
-        {/* Screen Content */}
-        <div className="aspect-[9/16] flex items-center justify-center p-3">
+        {/* Notch - Moved to left side for horizontal orientation */}
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-20 bg-foreground rounded-r-xl z-10" />
+        {/* Screen Content - Changed to horizontal aspect ratio */}
+        <div className="aspect-[16/9] flex items-center justify-center p-3">
           <img 
             src={image} 
             alt={title} 
@@ -58,6 +57,7 @@ const PhoneFrame = ({ image, title }: { image: string; title: string }) => (
 
 const ContentSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showArrows, setShowArrows] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { ref, isVisible } = useScrollAnimation({ threshold: 0.2 });
 
@@ -67,18 +67,49 @@ const ContentSection = () => {
     }
   }, [isVisible]);
 
+  useEffect(() => {
+    // Check if scrolling is needed (content overflows)
+    const checkOverflow = () => {
+      if (scrollContainerRef.current) {
+        const container = scrollContainerRef.current;
+        setShowArrows(container.scrollWidth > container.clientWidth);
+      }
+    };
+
+    checkOverflow();
+    window.addEventListener('resize', checkOverflow);
+    return () => window.removeEventListener('resize', checkOverflow);
+  }, []);
+
   const scroll = (direction: "left" | "right") => {
     playSound('pop');
-    if (direction === "left") {
-      setCurrentIndex((prev) => Math.max(0, prev - 1));
-    } else {
-      setCurrentIndex((prev) => Math.min(contentItems.length - 1, prev + 1));
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const scrollAmount = 350; // Adjust based on your card width + gap
+      
+      if (direction === "right") {
+        // Scroll right (shows previous content)
+        container.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+        // Update index based on scroll position
+        const cardWidth = 350; // Approximate card width
+        const newIndex = Math.max(0, Math.round(container.scrollLeft / cardWidth) - 1);
+        setCurrentIndex(newIndex);
+      } else {
+        // Scroll left (shows next content)
+        container.scrollBy({ left: scrollAmount, behavior: "smooth" });
+        // Update index based on scroll position
+        const cardWidth = 350; // Approximate card width
+        const newIndex = Math.min(
+          contentItems.length - 1, 
+        );
+        setCurrentIndex(newIndex);
+      }
     }
   };
 
   useEffect(() => {
     if (scrollContainerRef.current) {
-      const cardWidth = 280;
+      const cardWidth = 350; // Match the scroll amount
       scrollContainerRef.current.scrollTo({
         left: currentIndex * cardWidth,
         behavior: "smooth",
@@ -131,34 +162,14 @@ const ContentSection = () => {
         {/* Header */}
         <div className={`text-center mb-12 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-6 font-arabic">
-            محتوى <span className="text-sunny">متنوّع</span> وغنيّ
+            محتوى <span className=" text-foreground">متنوّع</span> وغنيّ
           </h2>
           <p className="text-lg md:text-xl text-primary-foreground/80 max-w-3xl mx-auto font-arabic leading-relaxed">
             وحدات من التعلّم الممتع تدمج الكتب، الكرتون، الألعاب، التمارين التفاعلية وأوراق العمل
           </p>
         </div>
 
-        {/* Navigation Arrows */}
-        <div className="flex justify-center gap-4 mb-8">
-          <Button
-            onClick={() => scroll("right")}
-            variant="default"
-            size="icon"
-            className="w-12 h-12 rounded-full bg-coral hover:bg-coral/90 text-primary-foreground shadow-lg"
-            disabled={currentIndex === 0}
-          >
-            <ChevronRight className="w-6 h-6" />
-          </Button>
-          <Button
-            onClick={() => scroll("left")}
-            variant="default"
-            size="icon"
-            className="w-12 h-12 rounded-full bg-coral hover:bg-coral/90 text-primary-foreground shadow-lg"
-            disabled={currentIndex >= contentItems.length - 1}
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </Button>
-        </div>
+   
 
         {/* Horizontal Scrolling Phone Frames */}
         <div 
@@ -173,15 +184,16 @@ const ContentSection = () => {
                 isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
               }`}
               style={{ transitionDelay: `${index * 150}ms` }}
-              onClick={() => setCurrentIndex(index)}
+              onClick={() => {
+                playSound('pop');
+                setCurrentIndex(index);
+              }}
             >
               <PhoneFrame image={item.image} title={item.title} />
               <h3 className="text-xl md:text-2xl font-bold text-primary-foreground mt-6 mb-2 font-arabic">
                 {item.title}
               </h3>
-              <p className="text-primary-foreground/80 font-arabic max-w-[200px]">
-                {item.description}
-              </p>
+             
             </div>
           ))}
         </div>

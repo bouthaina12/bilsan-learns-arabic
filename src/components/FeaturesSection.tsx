@@ -76,10 +76,11 @@ const FeaturesSection = () => {
             <div className="aspect-video relative bg-foreground/5">
               <iframe
                 className="w-full h-full"
-                src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                src="https://www.youtube.com/embed/e_04ZrNroTo?si=ABPSb_hZk1t7u8aU"         
                 title="بيلسان - تعلم العربية"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
+                
               />
             </div>
           </div>

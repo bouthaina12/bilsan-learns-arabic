@@ -12,8 +12,20 @@ import {
   Calendar,
   GraduationCap
 } from "lucide-react";
+import { useEffect } from "react";
 
 const TeacherDashboard = () => {
+   // Get user data directly from localStorage
+    const userData = localStorage.getItem('user');
+    const user = userData ? JSON.parse(userData) : null;
+  
+    // Redirect if no user
+    useEffect(() => {
+      if (!user) {
+        window.location.href = '/login';
+      }
+    }, [user]);
+    
   const stats = [
     { title: "الطلاب", value: "45", icon: Users, color: "bg-pink-light text-primary" },
     { title: "الدروس", value: "24", icon: GraduationCap, color: "bg-lavender text-accent-foreground" },
@@ -38,7 +50,7 @@ const TeacherDashboard = () => {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background font-arabic" dir="rtl">
-        <TeacherSidebar userName="أستاذ محمد" />
+        <TeacherSidebar userName={user?.username} />
         
         <main className="flex-1 overflow-auto">
           <header className="h-16 border-b border-border flex items-center px-6 bg-card">
@@ -54,11 +66,9 @@ const TeacherDashboard = () => {
                   <div className="text-4xl">👨‍🏫</div>
                   <div>
                     <h2 className="text-2xl font-bold text-foreground mb-1">
-                      مرحباً أستاذ محمد!
+                       مرحباً أستاذ {user?.username}!
                     </h2>
-                    <p className="text-muted-foreground">
-                      لديك 5 طلاب جدد هذا الأسبوع
-                    </p>
+                  
                   </div>
                 </div>
                 <Button className="gap-2">

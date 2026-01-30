@@ -45,6 +45,7 @@ export function TeacherSidebar({ userName = "معلم" }: TeacherSidebarProps) {
   const collapsed = state === "collapsed";
 
   const handleLogout = () => {
+    localStorage.removeItem('user');
     navigate("/");
   };
 
@@ -53,13 +54,14 @@ export function TeacherSidebar({ userName = "معلم" }: TeacherSidebarProps) {
   return (
     <Sidebar 
       className={cn(
-        "border-l border-border bg-sidebar-background transition-all duration-300",
+        "border-l border-border bg-[#FFB6C1] transition-all duration-300 fixed right-0 top-0 h-screen z-40",
         collapsed ? "w-16" : "w-64"
       )}
       collapsible="icon"
+      style={{ zIndex: 40 }}
     >
-      <SidebarHeader className="p-4 border-b border-sidebar-border">
-        <Link to="/" className="flex items-center gap-2">
+       <SidebarHeader className="p-4 border-b border-sidebar-border">
+        <Link to="" className="flex items-center gap-2">
           <span className="text-2xl">🌸</span>
           {!collapsed && (
             <span className="text-xl font-bold text-primary font-arabic">
@@ -71,18 +73,17 @@ export function TeacherSidebar({ userName = "معلم" }: TeacherSidebarProps) {
 
       {/* Teacher Info */}
       {!collapsed && (
-        <div className="p-4 border-b border-sidebar-border">
+        <div className="p-4 border-b border-border/50">
           <div className="text-center">
-            <div className="w-16 h-16 mx-auto bg-accent/30 rounded-full flex items-center justify-center mb-2">
+            <div className="w-16 h-16 mx-auto bg-white/80 rounded-full flex items-center justify-center mb-2">
               <span className="text-2xl">👨‍🏫</span>
             </div>
             <h3 className="font-arabic font-bold text-foreground">{userName}</h3>
-            <span className="text-sm font-arabic text-muted-foreground">معلم</span>
           </div>
         </div>
       )}
 
-      <SidebarContent className="flex-1">
+      <SidebarContent className="flex-1 overflow-y-auto">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -95,7 +96,7 @@ export function TeacherSidebar({ userName = "معلم" }: TeacherSidebarProps) {
                       "transition-all duration-200",
                       isActive(item.url) 
                         ? "bg-accent text-accent-foreground hover:bg-accent/90" 
-                        : "hover:bg-sidebar-accent"
+                        : "hover:bg-white/80 text-foreground"
                     )}
                   >
                     <Link to={item.url} className="flex items-center gap-3">
@@ -112,10 +113,10 @@ export function TeacherSidebar({ userName = "معلم" }: TeacherSidebarProps) {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4 border-t border-sidebar-border">
+      <SidebarFooter className="p-4 border-t border-border/50">
         <Button
           variant="ghost"
-          className="w-full justify-start gap-3 text-destructive hover:text-destructive hover:bg-destructive/10"
+          className="w-full justify-start gap-3 text-destructive hover:text-destructive hover:bg-white/80"
           onClick={handleLogout}
         >
           <LogOut className="w-5 h-5" />

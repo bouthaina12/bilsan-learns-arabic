@@ -5,13 +5,11 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { User, Lock, Mail, Phone, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import loginMascot from "@/assets/login-mascot.png";
+import bilsan from "@/assets/bilsan.png";
 
-type UserType = "teacher" | "student";
 type AuthMode = "login" | "signup";
 
 const Auth = () => {
-  const [userType, setUserType] = useState<UserType>("student");
   const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -19,61 +17,153 @@ const Auth = () => {
     username: "",
     password: "",
     email: "",
-    fullName: "",
     phone: "",
-    school: "",
-    grade: "",
+    level: "beginner",
+    confirmPassword: "",
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Navigate to appropriate dashboard based on user type
-    if (userType === "teacher") {
-      navigate("/teacher-dashboard");
-    } else {
-      navigate("/student-dashboard");
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    // Clear error for this field
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: "" });
     }
   };
 
-  const isTeacher = userType === "teacher";
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.username.trim()) {
+      newErrors.username = "اسم المستخدم مطلوب";
+    }
+
+    if (!formData.password) {
+      newErrors.password = "كلمة المرور مطلوبة";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "كلمة المرور يجب أن تكون 6 أحرف على الأقل";
+    }
+
+    if (authMode === "signup") {
+      if (!formData.email.trim()) {
+        newErrors.email = "البريد الإلكتروني مطلوب";
+      } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+        newErrors.email = "البريد الإلكتروني غير صحيح";
+      }
+
+      if (!formData.phone.trim()) {
+        newErrors.phone = "رقم الهاتف مطلوب";
+      }
+
+      if (formData.password !== formData.confirmPassword) {
+        newErrors.confirmPassword = "كلمة المرور وتأكيدها غير متطابقين";
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    const endpoint = authMode === "signup" 
+      ? "/api/auth/signup.php"
+      : "/api/auth/login.php";
+
+    const payload: any = {
+      username: formData.username,
+      password: formData.password,
+      userType: "student", // Always student
+    };
+
+    if (authMode === "signup") {
+      payload.email = formData.email;
+      payload.phone = formData.phone;
+      payload.level = formData.level;
+      payload.confirmPassword = formData.confirmPassword;
+    }
+
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(payload),
+        credentials: 'include' // Important for sessions
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        // Handle PHP errors
+        if (data.error) {
+          setErrors({ submit: data.error });
+        } else {
+          setErrors({ submit: "حدث خطأ ما" });
+        }
+        return;
+      }
+
+      // Success handling
+      if (authMode === "signup") {
+        alert("تم التسجيل بنجاح! يمكنك الآن تسجيل الدخول");
+        setAuthMode("login");
+        setFormData({
+          username: "",
+          password: "",
+          email: "",
+          phone: "",
+          level: "beginner",
+          confirmPassword: "",
+        });
+      } else {
+        // Login successful
+        
+        // Store user data in localStorage
+        localStorage.setItem('user', JSON.stringify(data.user));
+        
+        // Redirect to student dashboard
+        navigate("/student-dashboard");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setErrors({ submit: "خطأ في الاتصال بالخادم" });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex font-arabic" dir="rtl">
-      {/* Back to website link */}
-      <div className="fixed top-4 left-4 z-50">
-        <Link
-          to="/"
-          className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
-        >
-          <ArrowRight className="w-4 h-4 rotate-180" />
-          <span>Back To Website</span>
-        </Link>
-      </div>
+      {/* رابط العودة للموقع */}
       <div className="fixed top-4 right-4 z-50">
         <Link
           to="/"
           className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
         >
-          <span>عودة إلى الموقع</span>
+          <span>العودة إلى الموقع</span>
           <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
 
-      {/* Left Side - Mascot */}
+      {/* الجانب الأيسر - التميمة */}
       <div
-        className={`hidden lg:flex w-1/2 flex-col items-center justify-center p-12 transition-colors duration-500 relative overflow-hidden ${
-          isTeacher
-            ? "bg-gradient-to-br from-accent to-accent/80"
-            : "bg-gradient-to-br from-primary to-primary/80"
-        }`}
+        className={`hidden lg:flex w-1/2 flex-col items-center justify-center p-12 transition-colors duration-500 relative overflow-hidden bg-gradient-to-br from-primary to-primary/80`}
       >
-        {/* Background pattern */}
-        <div className="absolute inset-0 opacity-10">
-          {["📚", "✏️", "🎓", "📖", "🎨", "🎯"].map((emoji, i) => (
+        {/* النمط الخلفي */}
+        <div className="absolute inset-0 opacity-80">
+          {["📚", "🎓", "📖", "🎨", "🎯", "✨", "⭐", "🌟","📖", "🎨", "🎯", "✨", "⭐", "🌟"].map((emoji, i) => (
             <span
               key={i}
               className="absolute text-4xl"
@@ -88,91 +178,44 @@ const Auth = () => {
           ))}
         </div>
 
-        <h1 className="text-4xl font-bold text-primary-foreground mb-8 text-center relative z-10">
-          Let's get started !
-        </h1>
+       
 
         <div className="relative z-10 max-w-sm">
           <img
-            src={loginMascot}
-            alt="Bilsan Mascot"
+            src={bilsan}
+            alt="تميمة بيلسان"
             className="w-full h-auto drop-shadow-2xl animate-float"
           />
         </div>
 
-        <p className="text-primary-foreground/80 mt-8 text-center relative z-10">
-          Download Bilsan on your phone or tablet
-        </p>
-        <div className="flex gap-4 mt-4 relative z-10">
-          <Button
-            variant="outline"
-            className="bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20"
-          >
-            🍎 Apple Store
-          </Button>
-          <Button
-            variant="outline"
-            className="bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20"
-          >
-            ▶️ Play Store
-          </Button>
-        </div>
+       
       </div>
 
-      {/* Right Side - Form */}
+      {/* الجانب الأيمن - النموذج */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-background">
         <div className="w-full max-w-md">
-          {/* User Type Tabs */}
-          <div className="flex mb-8 border-b-2 border-border">
-            <button
-              onClick={() => setUserType("teacher")}
-              className={`flex-1 py-3 text-lg font-medium transition-all relative ${
-                isTeacher
-                  ? "text-accent-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Teacher
-              {isTeacher && (
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-accent rounded-t-full" />
-              )}
-            </button>
-            <button
-              onClick={() => setUserType("student")}
-              className={`flex-1 py-3 text-lg font-medium transition-all relative ${
-                !isTeacher
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Student
-              {!isTeacher && (
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-primary rounded-t-full" />
-              )}
-            </button>
+          {/* عنوان الطالب */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-primary/10 to-primary/5 rounded-full">
+              <span className="text-2xl">🎓</span>
+              <h2 className="text-2xl font-bold text-primary">منصة الطالب التعليمية</h2>
+            </div>
+            <p className="text-gray-600 dark:text-gray-300 mt-2">
+              سجل الدخول للوصول إلى جميع الأدوات التعليمية
+            </p>
           </div>
 
-          {/* Form */}
+          {/* Error message */}
+          {errors.submit && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
+              {errors.submit}
+            </div>
+          )}
+
+          {/* النموذج */}
           <form onSubmit={handleSubmit} className="space-y-5">
             {authMode === "signup" && (
               <>
-                <div className="space-y-2">
-                  <Label htmlFor="fullName" className="text-right block">
-                    الاسم الكامل:
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      id="fullName"
-                      name="fullName"
-                      value={formData.fullName}
-                      onChange={handleInputChange}
-                      placeholder="أدخل اسمك الكامل"
-                      className="pr-10 text-right rounded-full border-border"
-                    />
-                    <User className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  </div>
-                </div>
-
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-right block">
                     البريد الإلكتروني:
@@ -185,10 +228,12 @@ const Auth = () => {
                       value={formData.email}
                       onChange={handleInputChange}
                       placeholder="أدخل بريدك الإلكتروني"
-                      className="pr-10 text-right rounded-full border-border"
+                      className={`pr-10 text-right rounded-full border-border ${errors.email ? 'border-red-500' : ''}`}
+                      disabled={isLoading}
                     />
                     <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   </div>
+                  {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -203,54 +248,37 @@ const Auth = () => {
                       value={formData.phone}
                       onChange={handleInputChange}
                       placeholder="أدخل رقم هاتفك"
-                      className="pr-10 text-right rounded-full border-border"
+                      className={`pr-10 text-right rounded-full border-border ${errors.phone ? 'border-red-500' : ''}`}
                       dir="ltr"
+                      disabled={isLoading}
                     />
                     <Phone className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   </div>
+                  {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                 </div>
 
-                {isTeacher && (
-                  <div className="space-y-2">
-                    <Label htmlFor="school" className="text-right block">
-                      اسم المدرسة:
-                    </Label>
-                    <div className="relative">
-                      <Input
-                        id="school"
-                        name="school"
-                        value={formData.school}
-                        onChange={handleInputChange}
-                        placeholder="أدخل اسم المدرسة"
-                        className="pr-10 text-right rounded-full border-border"
-                      />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                        🏫
-                      </span>
-                    </div>
+                <div className="space-y-2">
+                  <Label htmlFor="level" className="text-right block">
+                    المستوى التعليمي:
+                  </Label>
+                  <div className="relative">
+                    <select
+                      id="level"
+                      name="level"
+                      value={formData.level}
+                      onChange={handleInputChange}
+                      className="w-full pr-10 pl-3 text-right rounded-full border-border h-10 px-3 py-2 border bg-background"
+                      disabled={isLoading}
+                    >
+                      <option value="beginner">مبتدئ</option>
+                      <option value="medium">متوسط</option>
+                      <option value="advanced">متقدم</option>
+                    </select>
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                      📚
+                    </span>
                   </div>
-                )}
-
-                {!isTeacher && (
-                  <div className="space-y-2">
-                    <Label htmlFor="grade" className="text-right block">
-                      الصف الدراسي:
-                    </Label>
-                    <div className="relative">
-                      <Input
-                        id="grade"
-                        name="grade"
-                        value={formData.grade}
-                        onChange={handleInputChange}
-                        placeholder="أدخل صفك الدراسي"
-                        className="pr-10 text-right rounded-full border-border"
-                      />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                        📚
-                      </span>
-                    </div>
-                  </div>
-                )}
+                </div>
               </>
             )}
 
@@ -264,11 +292,13 @@ const Auth = () => {
                   name="username"
                   value={formData.username}
                   onChange={handleInputChange}
-                  placeholder="Type your username"
-                  className="pr-10 text-right rounded-full border-border"
+                  placeholder="أدخل اسم المستخدم"
+                  className={`pr-10 text-right rounded-full border-border ${errors.username ? 'border-red-500' : ''}`}
+                  disabled={isLoading}
                 />
                 <User className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               </div>
+              {errors.username && <p className="text-red-500 text-xs mt-1">{errors.username}</p>}
             </div>
 
             <div className="space-y-2">
@@ -282,14 +312,16 @@ const Auth = () => {
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={handleInputChange}
-                  placeholder="Type your password"
-                  className="pr-10 pl-10 text-right rounded-full border-border"
+                  placeholder="أدخل كلمة المرور"
+                  className={`pr-10 pl-10 text-right rounded-full border-border ${errors.password ? 'border-red-500' : ''}`}
+                  disabled={isLoading}
                 />
                 <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  disabled={isLoading}
                 >
                   {showPassword ? (
                     <EyeOff className="w-5 h-5" />
@@ -298,6 +330,7 @@ const Auth = () => {
                   )}
                 </button>
               </div>
+              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
             </div>
 
             {authMode === "signup" && (
@@ -310,37 +343,46 @@ const Auth = () => {
                     id="confirmPassword"
                     name="confirmPassword"
                     type="password"
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
                     placeholder="أعد كتابة كلمة المرور"
-                    className="pr-10 text-right rounded-full border-border"
+                    className={`pr-10 text-right rounded-full border-border ${errors.confirmPassword ? 'border-red-500' : ''}`}
+                    disabled={isLoading}
                   />
                   <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 </div>
+                {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
               </div>
             )}
 
             <Button
               type="submit"
-              className={`w-full rounded-full py-6 text-lg font-medium transition-all duration-300 ${
-                isTeacher
-                  ? "bg-accent hover:bg-accent/90 text-accent-foreground"
-                  : "bg-primary hover:bg-primary/90"
-              }`}
+              className="w-full rounded-full py-6 text-lg font-medium transition-all duration-300 bg-primary hover:bg-primary/90 text-white"
+              disabled={isLoading}
             >
-              {authMode === "login" ? "Login - دخول" : "Sign Up - تسجيل"}
+              {isLoading ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  جاري المعالجة...
+                </span>
+              ) : authMode === "login" ? "تسجيل الدخول" : "إنشاء حساب جديد"}
             </Button>
 
             {authMode === "login" && (
               <div className="flex items-center justify-between text-sm">
                 <a
-                  href="#"
+                  href="/forgot-password"
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
-                  Forgot login credentials
+                  نسيت كلمة المرور؟
                 </a>
                 <div className="flex items-center gap-2">
                   <Checkbox id="remember" />
                   <label htmlFor="remember" className="text-muted-foreground">
-                    Remember Me
+                    تذكرني
                   </label>
                 </div>
               </div>
@@ -351,25 +393,25 @@ const Auth = () => {
                 <button
                   type="button"
                   onClick={() => setAuthMode("signup")}
-                  className={`text-sm ${
-                    isTeacher ? "text-accent" : "text-primary"
-                  } hover:underline`}
+                  className="text-sm text-primary hover:underline"
+                  disabled={isLoading}
                 >
-                  Don't have an account? - ليس لديك حساب؟
+                  ليس لديك حساب؟ سجل الآن
                 </button>
               ) : (
                 <button
                   type="button"
                   onClick={() => setAuthMode("login")}
-                  className={`text-sm ${
-                    isTeacher ? "text-accent" : "text-primary"
-                  } hover:underline`}
+                  className="text-sm text-primary hover:underline"
+                  disabled={isLoading}
                 >
-                  Already have an account? - لديك حساب بالفعل؟
+                  لديك حساب بالفعل؟ سجل الدخول
                 </button>
               )}
             </div>
           </form>
+
+          
         </div>
       </div>
     </div>

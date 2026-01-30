@@ -42,34 +42,16 @@ const Navbar = () => {
             >
               الرئيسية
             </button>
-            <Link
-              to="/student"
-              className="text-foreground hover:text-primary transition-colors font-arabic font-medium"
-            >
-              الطالب
-            </Link>
-            <Link
-              to="/teacher"
-              className="text-foreground hover:text-primary transition-colors font-arabic font-medium"
-            >
-              المعلم
-            </Link>
+            
+            
           </div>
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={toggleLanguage}
-              className="font-arabic gap-2 rounded-full"
-            >
-              <Globe className="w-4 h-4" />
-              {language === "ar" ? "DE" : "عربي"}
-            </Button>
+            
             <Button
               variant="ghost"
-              className="font-arabic hover:bg-primary/10"
+              className="text-lg font-arabic px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 bg-primary hover:bg-primary/90"
               onClick={handleLogin}
             >
               تسجيل الدخول
@@ -122,7 +104,7 @@ const Navbar = () => {
                 </Button>
                 <Button
                   variant="ghost"
-                  className="font-arabic justify-start"
+                  className="text-lg font-arabic px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 bg-primary hover:bg-primary/90"
                   onClick={handleLogin}
                 >
                   تسجيل الدخول
