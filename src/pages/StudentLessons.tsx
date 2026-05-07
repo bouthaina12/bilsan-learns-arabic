@@ -142,7 +142,7 @@ const fetchLessons = async () => {
             <div className="px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-4">
                
-                <h1 className="text-2xl font-bold text-primary">الدروس التعليمية</h1>
+                <h1 className="text-2xl font-bold text-primary"> القصص الرقمية </h1>
               </div>
               <div className="flex items-center gap-4">
                 
@@ -161,10 +161,10 @@ const fetchLessons = async () => {
                 </div>
                 <div>
                   <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
-                       مرحباً  في مكتبة الدروس
+                       مرحباً  في مكتبة القصص الرقمية
                   </h2>
                   <p className="text-gray-600 dark:text-gray-300">
-اكتشف دروساً ممتعة تنمي خيالك         </p>
+اكتشف قصص الرقمية ممتعة تنمي خيالك         </p>
                 </div>
               </div>
             </div>

@@ -28,13 +28,12 @@ import {
 } from "lucide-react";
 
 const studentMenuItems = [
-  { title: "لوحة التحكم", url: "/student-dashboard", icon: LayoutDashboard },
-  { title: "الدروس", url: "/student-dashboard/lessons", icon: GraduationCap },
-  { title: "القصص", url: "/student-dashboard/stories", icon: BookOpen },
-  //{ title: "أوراق العمل", url: "/student-dashboard/worksheets", icon: FileText },
-  { title: "الألعاب", url: "/student-dashboard/games", icon: Gamepad2 },
-  //{ title: "الامتحانات", url: "/student-dashboard/exams", icon: FileText },
-  //{ title: "المسابقات", url: "/student-dashboard/competitions", icon: Trophy },
+  //{ title: "لوحة التحكم", url: "/student-dashboard", icon: LayoutDashboard },
+  { title: "انجازاتي", url: "/student-dashboard", icon: LayoutDashboard},
+  { title: "القصص الرقمية", url: "/student-dashboard/lessons", icon: GraduationCap },
+  { title: "القصص الورقية", url: "/student-dashboard/stories", icon: BookOpen },
+  { title: "الانشطة التفاعلية", url: "/student-dashboard/games", icon: Gamepad2 },
+  
 ];
 
 interface DashboardSidebarProps {

@@ -52,10 +52,10 @@ const PuzzleGame = () => {
   const puzzleImages: PuzzleImage[] = [
     {
       id: 1,
-      name: 'تفاحة',
-      category: 'فواكه',
-      word: 'تفاحة',
-      description: 'صورة تفاحة حمراء لذيذة',
+      name: 'قرقنة',
+      category: 'قرقنة',
+      word: 'قرقنة',
+      description: 'قرقنة  ',
       folderName: 'apple',
       gridSizes: [3],
       difficulty: 'easy'
@@ -393,7 +393,7 @@ const PuzzleGame = () => {
 
   // مؤقت
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: number;
     if (gameState === 'playing') {
       timer = setInterval(() => setTime(prev => prev + 1), 1000);
     }

@@ -119,7 +119,7 @@ const StoryDetail = () => {
   const fullScreenRef = useRef<HTMLDivElement>(null);
   const flipBookRef = useRef<any>(null);
   const isPdfjsLoaded = useRef(false);
-  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const progressIntervalRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -1006,15 +1006,7 @@ const handleSuccessfulSubmit = (result: any, isNew: boolean) => {
                 {/* شريط أدوات الكتاب */}
                 <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-b dark:border-gray-700 px-4 py-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={toggleFullScreen}
-                      className="flex items-center gap-1.5"
-                    >
-                      {isFullScreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-                      {isFullScreen ? 'تصغير' : 'تكبير'}
-                    </Button>
+                   
                     
                     <Button
                       size="sm"
@@ -1225,7 +1217,6 @@ const handleSuccessfulSubmit = (result: any, isNew: boolean) => {
                               id="liked_words"
                               value={kidsForm.liked_words}
                               onChange={(e) => handleKidsFormChange('liked_words', e.target.value)}
-                              placeholder="اكتب ثلاث كلمات مفضلة... مثل: مغامرة، صداقة، شجاعة"
                               className="bg-white dark:bg-gray-700 border-2 border-pink-300 dark:border-pink-600 rounded-xl p-4 h-12 text-lg"
                               required
                             />
@@ -1245,7 +1236,6 @@ const handleSuccessfulSubmit = (result: any, isNew: boolean) => {
                               id="summary_arabic"
                               value={kidsForm.summary_arabic}
                               onChange={(e) => handleKidsFormChange('summary_arabic', e.target.value)}
-                              placeholder="استخدم الكلمات التي اخترتها لكتابة ملخص للقصة..."
                               className="bg-white dark:bg-gray-700 border-2 border-blue-300 dark:border-blue-600 rounded-xl p-4 min-h-[100px] text-lg"
                               required
                             />
@@ -1265,7 +1255,6 @@ const handleSuccessfulSubmit = (result: any, isNew: boolean) => {
                               id="favorite_part"
                               value={kidsForm.favorite_part}
                               onChange={(e) => handleKidsFormChange('favorite_part', e.target.value)}
-                              placeholder="أحببت الجزء الذي..."
                               className="bg-white dark:bg-gray-700 border-2 border-green-300 dark:border-green-600 rounded-xl p-4 min-h-[80px] text-lg"
                               required
                             />
@@ -1285,7 +1274,6 @@ const handleSuccessfulSubmit = (result: any, isNew: boolean) => {
                               id="desired_changes"
                               value={kidsForm.desired_changes}
                               onChange={(e) => handleKidsFormChange('desired_changes', e.target.value)}
-                              placeholder="أود أن أغير..."
                               className="bg-white dark:bg-gray-700 border-2 border-amber-300 dark:border-amber-600 rounded-xl p-4 min-h-[80px] text-lg"
                               required
                             />
@@ -1304,7 +1292,6 @@ const handleSuccessfulSubmit = (result: any, isNew: boolean) => {
                               id="favorite_paragraph"
                               value={kidsForm.favorite_paragraph}
                               onChange={(e) => handleKidsFormChange('favorite_paragraph', e.target.value)}
-                              placeholder="اكتب الفقرة التي أعجبتك هنا..."
                               className="bg-white dark:bg-gray-700 border-2 border-purple-300 dark:border-purple-600 rounded-xl p-4 min-h-[100px] text-lg"
                               required
                             />

@@ -47,103 +47,43 @@ const FlashcardsGame = () => {
   const [flashcards, setFlashcards] = useState<Flashcard[]>([
     {
       id: 1,
-      word: 'تفاحة',
-      meaning: 'Apple',
-      arabicExample: 'أحب أكل التفاحة الحمراء',
-      englishExample: 'I like to eat red apples',
-      category: 'فواكه',
+      word: 'شاشيّةٌ',
+      meaning: '',
+      arabicExample: 'شاشيّةٌ تزين الحائط',
+      englishExample: '',
+      category: 'شاشيّةٌ',
       difficulty: 'easy',
-      imagePath: '/src/assets/games/flashcards/apple.png'
+      imagePath: '/src/assets/games/flashcards/شاشيّةٌ.jpg'
     },
     {
       id: 2,
-      word: 'lion',
-      meaning: 'أسد',
-      arabicExample: 'الأسد ملك الغابة',
-      englishExample: 'The lion is the king of the jungle',
-      category: 'حيوانات',
+      word: 'خرز ملوّنٌ',
+      meaning: '',
+      arabicExample: ' خرز ملوّنٌ يزين العقد',
+      englishExample: '',
+      category: 'خرز',
       difficulty: 'easy',
-      imagePath: '/src/assets/games/flashcards/book.png'
+      imagePath: '/src/assets/games/flashcards/خرز.jpg'
     },
     {
       id: 3,
-      word: 'Teacher',
-      meaning: 'معلم',
-      arabicExample: 'المعلم يشرح الدرس للطلاب',
-      englishExample: 'The teacher explains the lesson to the students',
-      category: 'مدرسة',
+      word: 'قفطانٌ',
+      meaning: '',
+      arabicExample: '   قفطانٌ جميلٌ  ',
+      englishExample: '',
+      category: 'قفطانٌ',
       difficulty: 'medium',
-      imagePath: '/src/assets/games/flashcards/teacher.png'
+      imagePath: '/src/assets/games/flashcards/قفطانٌ.jpg'
     },
     {
       id: 4,
-      word: 'Computer',
-      meaning: 'حاسوب',
-      arabicExample: 'أستخدم الحاسوب للدراسة والعمل',
-      englishExample: 'I use the computer for studying and working',
-      category: 'تكنولوجيا',
+      word: 'برنُسٌ',
+      meaning: '',
+      arabicExample: 'برنُسٌ دافئٌ في الشتاء',
+      englishExample: '',
+      category: 'برنُسٌ',
       difficulty: 'medium',
-      imagePath: '/src/assets/games/flashcards/computer.png'
-    },
-    {
-      id: 5,
-      word: 'Hospital',
-      meaning: 'مستشفى',
-      arabicExample: 'ذهبت إلى المستشفى لزيارة المريض',
-      englishExample: 'I went to the hospital to visit the patient',
-      category: 'أماكن',
-      difficulty: 'medium',
-      imagePath: '/src/assets/games/flashcards/hospital.png'
-    },
-    {
-      id: 6,
-      word: 'Beautiful',
-      meaning: 'جميل',
-      arabicExample: 'الحديقة جميلة في فصل الربيع',
-      englishExample: 'The garden is beautiful in spring',
-      category: 'صفات',
-      difficulty: 'easy',
-      imagePath: '/src/assets/games/flashcards/beautiful.png'
-    },
-    {
-      id: 7,
-      word: 'University',
-      meaning: 'جامعة',
-      arabicExample: 'يدرس أخي في الجامعة',
-      englishExample: 'My brother studies at the university',
-      category: 'تعليم',
-      difficulty: 'medium',
-      imagePath: '/src/assets/games/flashcards/university.png'
-    },
-    {
-      id: 8,
-      word: 'Restaurant',
-      meaning: 'مطعم',
-      arabicExample: 'سوف نذهب إلى المطعم لتناول العشاء',
-      englishExample: 'We will go to the restaurant for dinner',
-      category: 'أماكن',
-      difficulty: 'medium',
-      imagePath: '/src/assets/games/flashcards/restaurant.png'
-    },
-    {
-      id: 9,
-      word: 'Friend',
-      meaning: 'صديق',
-      arabicExample: 'صديقي يساعدني دائماً',
-      englishExample: 'My friend always helps me',
-      category: 'علاقات',
-      difficulty: 'easy',
-      imagePath: '/src/assets/games/flashcards/friend.png'
-    },
-    {
-      id: 10,
-      word: 'House',
-      meaning: 'منزل',
-      arabicExample: 'نعيش في منزل كبير',
-      englishExample: 'We live in a big house',
-      category: 'أماكن',
-      difficulty: 'easy',
-      imagePath: '/src/assets/games/flashcards/house.png'
+      imagePath: '/src/assets/games/flashcards/برنُسٌ.jpg'
     }
   ]);
 
@@ -371,8 +311,8 @@ const FlashcardsGame = () => {
   }, [currentCategory]);
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
-    
+    let timer: number;
+
     if (gameState === 'playing') {
       timer = setInterval(() => {
         setGameStats(prev => ({
@@ -381,7 +321,7 @@ const FlashcardsGame = () => {
         }));
       }, 1000);
     }
-    
+
     return () => {
       if (timer) clearInterval(timer);
     };
@@ -633,7 +573,7 @@ const FlashcardsGame = () => {
                         <div className="flex items-center justify-center gap-4 mb-4">
                           <div className="w-16 h-16 rounded-lg overflow-hidden">
                             <img
-                              src="/src/assets/games/flashcards/apple.png"
+                              src="/src/assets/games/flashcards/برنُسٌ.jpg"
                               alt="Sample"
                               className="w-full h-full object-cover"
                               onError={(e) => {
@@ -643,8 +583,8 @@ const FlashcardsGame = () => {
                             />
                           </div>
                           <div className="text-right">
-                            <p className="text-lg font-bold text-gray-800 dark:text-white">Apple</p>
-                            <p className="text-green-600 dark:text-green-400">تفاحة</p>
+                            <p className="text-lg font-bold text-gray-800 dark:text-white"></p>
+                            <p className="text-green-600 dark:text-green-400">برنُسٌ</p>
                           </div>
                         </div>
                         <p className="text-sm text-gray-500 dark:text-gray-400">

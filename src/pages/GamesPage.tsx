@@ -4,16 +4,19 @@ import { Button } from '@/components/ui/button';
 import { Card } from "@/components/ui/card";
 import { 
   Puzzle, Trophy, Star, Play, TrendingUp, 
-  Clock, Users, Award, Zap, Sparkles, Gamepad2
+  Clock, Users, Award, Zap, Sparkles, Gamepad2,
+  Brain, Target, Volume2, GraduationCap
 } from 'lucide-react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
 import { playSound } from "@/hooks/useScrollAnimation";
 
-// استيراد الصور (تأكد من وجودها في المسارات التالية)
 import puzzlePreview from '@/assets/images/preview.jpg';
 import flashcardsPreview from '@/assets/images/flashcards-preview.jpg';
-
+import memoryGameImage from '@/assets/images/memory-game.jpg';
+import wordRaceImage from '@/assets/images/word-race.jpg';
+import listeningImage from '@/assets/images/listening-game.jpg';
+import l from '@/assets/images/7.png';
 
 interface Game {
   id: number;
@@ -26,7 +29,7 @@ interface Game {
   estimatedTime: string;
   completed: boolean;
   highScore?: number;
-  image: any; // تغيير من imagePath إلى image
+  image: any;
 }
 
 interface GameStat {
@@ -69,11 +72,49 @@ const GamesPage = () => {
       highScore: 0,
       image: flashcardsPreview
     },
-    
+    {
+      id: 3,
+      title: 'حقيبة الكلمات ',
+      description: 'افتح الحقيبة واكتشف الكلمات المخفية من خلال تذكر مواقعها في اللعبة',
+      icon: 'target',
+      category: 'ألعاب الذاكرة',
+      difficulty: 'hard',
+      points: 75,
+      estimatedTime: '4-8 دقائق',
+      completed: false,
+      highScore: 0,
+      image: wordRaceImage
+    },
+    {
+      id: 4,
+      title: 'كلمات وصور ',
+      description: ' كلمات وصور: لعبة تفاعلية تجمع بين السرعة والتعلم، حيث يتعين عليك ربط الكلمات بالصور الصحيحة ',
+      icon: 'zap',
+      category: 'ألعاب التعلم',
+      difficulty: 'easy',
+      points: 80,
+      estimatedTime: '5-10 دقائق',
+      completed: false,
+      highScore: 0,
+      image: l
+    },
+{
+  id: 5,
+  title: 'مُبدعو الحروف: أسرار بلاد بيلسان',
+  description: 'تسابق مع الوقت لكتابة أكبر عدد من الكلمات الصحيحة واجمع أكبر قدر من النقاط',
+  icon: 'volume2',
+  category: 'ألعاب المهارات',
+  difficulty: 'medium',
+  points: 90,
+  estimatedTime: '6-12 دقائق',
+  completed: false,
+  highScore: 0,
+  image: listeningImage 
+}
   ]);
 
   const [stats, setStats] = useState<GameStat>({
-    totalGames: 6,
+    totalGames: 5,
     completedGames: 0,
     totalPoints: 0,
     averageScore: 0,
@@ -82,50 +123,42 @@ const GamesPage = () => {
 
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  // صور بديلة للألعاب التي ليس لها صور
-  const defaultGameImages = [
-    'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h-300&fit=crop&auto=format',
-    'https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=400&h=300&fit=crop&auto=format',
-    'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=300&fit=crop&auto=format',
-    'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&h=300&fit=crop&auto=format',
-    'https://images.unsplash.com/photo-1534423861386-85a16f5d13fd?w=400&h=300&fit=crop&auto=format',
-    'https://images.unsplash.com/photo-1589256469067-ea99122bbdc4?w=400&h=300&fit=crop&auto=format'
-  ];
-
+  // First useEffect - Load saved data only once on mount
   useEffect(() => {
     if (!user) {
       window.location.href = '/login';
       return;
     }
 
-    // تحميل إحصائيات الألعاب من localStorage
+    // Load saved stats
     const savedStats = localStorage.getItem(`game-stats-${user.id}`);
     if (savedStats) {
       setStats(JSON.parse(savedStats));
     }
 
-    // تحميل حالة الألعاب من localStorage (بدون الصور)
+    // Load saved games progress
     const savedGames = localStorage.getItem(`games-progress-${user.id}`);
     if (savedGames) {
       const parsedGames = JSON.parse(savedGames);
-      // إضافة الصور للالعاب المحملة
-      const gamesWithImages = parsedGames.map((game: Game, index: number) => ({
-        ...game,
-        image: games[index]?.image || defaultGameImages[index]
-      }));
-      setGames(gamesWithImages);
+      setGames(prevGames => 
+        prevGames.map(game => {
+          const savedGame = parsedGames.find((g: Game) => g.id === game.id);
+          return savedGame ? { ...game, completed: savedGame.completed, highScore: savedGame.highScore } : game;
+        })
+      );
     }
 
     playSound('click');
-  }, []);
+  }, []); // Empty dependency array - runs only once
 
+  // Second useEffect - Save data when games change
   useEffect(() => {
-    if (user) {
-      // حفظ الألعاب بدون الصور (لأن الصور لا يمكن تخزينها في localStorage)
-      const gamesWithoutImages = games.map(({ image, ...rest }) => rest);
-      localStorage.setItem(`games-progress-${user.id}`, JSON.stringify(gamesWithoutImages));
+    if (user && games.length > 0) {
+      // Save games progress (without images to avoid storage issues)
+      const gamesToSave = games.map(({ image, ...rest }) => rest);
+      localStorage.setItem(`games-progress-${user.id}`, JSON.stringify(gamesToSave));
       
-      // تحديث الإحصائيات
+      // Update statistics
       const completedGames = games.filter(game => game.completed).length;
       const totalPoints = games.reduce((sum, game) => sum + (game.highScore || 0), 0);
       const averageScore = completedGames > 0 ? Math.round(totalPoints / completedGames) : 0;
@@ -136,31 +169,35 @@ const GamesPage = () => {
           ).title
         : 'لم تلعب بعد';
 
-      setStats({
+      const newStats = {
         totalGames: games.length,
         completedGames,
         totalPoints,
         averageScore,
         favoriteGame
-      });
+      };
 
-      localStorage.setItem(`game-stats-${user.id}`, JSON.stringify(stats));
+      setStats(newStats);
+      localStorage.setItem(`game-stats-${user.id}`, JSON.stringify(newStats));
     }
-  }, [games]);
+  }, [games, user]); // Only runs when games or user changes
 
   const filteredGames = selectedCategory === 'all' 
     ? games 
     : games.filter(game => game.category === selectedCategory);
 
-  const categories = ['all', 'ألعاب التفكير', 'ألعاب التعلم', 'ألعاب السرعة', 'ألعاب الذاكرة', 'ألعاب اللغة', 'ألعاب البحث'];
+  const categories = ['all', 'ألعاب التفكير', 'ألعاب التعلم', 'ألعاب الذاكرة', 'ألعاب السرعة', 'ألعاب المهارات'];
 
   const getIcon = (iconName: string) => {
     switch (iconName) {
       case 'puzzle': return <Puzzle className="w-6 h-6" />;
-      case 'cards': return <Card className="w-6 h-6" />;
+      case 'cards': return <GraduationCap className="w-6 h-6" />;
       case 'zap': return <Zap className="w-6 h-6" />;
       case 'sparkles': return <Sparkles className="w-6 h-6" />;
       case 'trendingUp': return <TrendingUp className="w-6 h-6" />;
+      case 'brain': return <Brain className="w-6 h-6" />;
+      case 'target': return <Target className="w-6 h-6" />;
+      case 'volume2': return <Volume2 className="w-6 h-6" />;
       default: return <Gamepad2 className="w-6 h-6" />;
     }
   };
@@ -185,10 +222,13 @@ const GamesPage = () => {
         navigate('/student-dashboard/games/flashcards');
         break;
       case 3:
-        navigate('/student-dashboard/games/word-race');
+        navigate('/student-dashboard/games/memory');
         break;
       case 4:
-        navigate('/student-dashboard/games/memory');
+        navigate('/student-dashboard/games/word-race');
+        break;
+      case 5:
+        navigate('/student-dashboard/games/listening');
         break;
       default:
         playSound('wrong');
@@ -210,50 +250,21 @@ const GamesPage = () => {
         </div>
 
         <div className="mr-64 min-h-screen">
-          
-{/* Header */}
-          <header className="bg-white shadow-sm border-b">
+          <header className="bg-white shadow-sm border-b dark:bg-gray-800 dark:border-gray-700">
             <div className="px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-4">
-                
-                <h1 className="text-2xl font-bold text-primary"> 
-                    ألعاب تعليمية</h1>
-                 
+                <h1 className="text-2xl font-bold text-primary">ألعاب تعليمية</h1>
               </div>
-              
-              
             </div>
           </header>
+
           <main className="p-6">
            
 
-            {/* تصفية حسب الفئة */}
-            <div className="mb-8">
-              <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4">تصفية حسب الفئة</h2>
-              <div className="flex flex-wrap gap-2">
-                {categories.map(category => (
-                  <Button
-                    key={category}
-                    variant={selectedCategory === category ? "default" : "outline"}
-                    onClick={() => {
-                      playSound('click');
-                      setSelectedCategory(category);
-                    }}
-                    className={`${
-                      selectedCategory === category 
-                        ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white' 
-                        : ''
-                    }`}
-                  >
-                    {category === 'all' ? 'جميع الألعاب' : category}
-                  </Button>
-                ))}
-              </div>
-            </div>
 
-            {/* قائمة الألعاب */}
+            {/* Games Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredGames.map((game, index) => (
+              {filteredGames.map((game) => (
                 <Card 
                   key={game.id} 
                   className={`group border-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl overflow-hidden ${
@@ -262,7 +273,6 @@ const GamesPage = () => {
                       : 'border-transparent'
                   }`}
                 >
-                  {/* صورة اللعبة */}
                   <div className="relative h-48 overflow-hidden bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30">
                     {game.image && typeof game.image === 'string' ? (
                       <img
@@ -271,45 +281,47 @@ const GamesPage = () => {
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
-                          target.src = defaultGameImages[index] || defaultGameImages[0];
+                          target.src = 'https://via.placeholder.com/400x300?text=Game';
                         }}
-                      />
-                    ) : game.image ? (
-                      <img
-                        src={game.image}
-                        alt={game.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-200 to-purple-200">
-                        <span className="text-4xl font-bold text-indigo-600 dark:text-indigo-400">
-                          {game.icon === 'puzzle' ? '🧩' : 
-                           game.icon === 'cards' ? '🎴' :
-                           game.icon === 'zap' ? '⚡' :
-                           game.icon === 'sparkles' ? '✨' : '🎮'}
-                        </span>
+                        {getIcon(game.icon)}
                       </div>
                     )}
+                    
                     <div className="absolute top-3 right-3">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getDifficultyColor(game.difficulty)}`}>
-                        {game.difficulty === 'easy' ? 'سهل' : game.difficulty === 'medium' ? 'متوسط' : 'صعب'}
+                      <span className={`px-3 py-1.5 rounded-xl text-xs font-bold shadow-lg ${getDifficultyColor(game.difficulty)}`}>
+                        {game.difficulty === 'easy' && 'سهل'}
+                        {game.difficulty === 'medium' && 'متوسط'}
+                        {game.difficulty === 'hard' && 'صعب'}
                       </span>
                     </div>
+                    
                     {game.completed && (
                       <div className="absolute top-3 left-3">
-                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
-                          مكتمل
+                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 shadow-lg">
+                          ✓ مكتمل
                         </span>
                       </div>
                     )}
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+                    
+                    <div className="absolute bottom-3 right-3">
+                      <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500 text-white shadow-lg">
+                        +{game.points} نقطة
+                      </span>
+                    </div>
+                    
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
                       <h3 className="font-bold text-lg text-white">{game.title}</h3>
                       <p className="text-white/90 text-sm mt-1">{game.category}</p>
                     </div>
                   </div>
 
                   <div className="p-5">
-                    <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm">{game.description}</p>
+                    <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm leading-relaxed">
+                      {game.description}
+                    </p>
 
                     <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
                       <div className="flex items-center gap-2">
@@ -317,25 +329,14 @@ const GamesPage = () => {
                         <span>{game.estimatedTime}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-1">
-                          <Star className="w-4 h-4 text-amber-500" />
-                          <span className="font-bold text-amber-600 dark:text-amber-400">{game.points}</span>
-                        </div>
+                        <Users className="w-4 h-4" />
+                        <span>فردي</span>
                       </div>
                     </div>
 
-                    {game.highScore && game.highScore > 0 && (
-                      <div className="mb-4 p-3 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-lg">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-amber-800 dark:text-amber-300">أعلى نتيجة</span>
-                          <span className="text-lg font-bold text-amber-900 dark:text-amber-200">{game.highScore}</span>
-                        </div>
-                      </div>
-                    )}
-
                     <Button
                       onClick={() => handlePlayGame(game.id)}
-                      className="w-full group-hover:bg-gradient-to-r group-hover:from-indigo-600 group-hover:to-purple-600"
+                      className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
                       size="lg"
                     >
                       <Play className="w-4 h-4 ml-2" />
@@ -346,7 +347,7 @@ const GamesPage = () => {
               ))}
             </div>
 
-            {/* التعليمات */}
+            {/* Instructions */}
             <div className="mt-12">
               <Card className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border-0 p-6">
                 <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-3">

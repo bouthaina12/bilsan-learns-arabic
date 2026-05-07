@@ -263,7 +263,9 @@ const LessonDetails = () => {
     if (selectedAnswer || quizCompleted) return;
     
     const currentQuestion = questions[currentQuestionIndex];
-    const isCorrect = answer === currentQuestion.correct_answer;
+    const isCorrect =
+  answer.trim().toLowerCase() ===
+  currentQuestion.correct_answer.trim().toLowerCase();
     
     setSelectedAnswer(answer);
     setIsAnswerCorrect(isCorrect);
@@ -432,11 +434,11 @@ const LessonDetails = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <GraduationCap className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-foreground mb-2">الدرس غير موجود</h3>
-          <p className="text-muted-foreground mb-4">عذراً، لم نتمكن من العثور على هذا الدرس</p>
+          <h3 className="text-xl font-bold text-foreground mb-2">القصة الرقمية غير موجودة</h3>
+          <p className="text-muted-foreground mb-4">عذراً، لم نتمكن من العثور على هذه القصة الرقمية</p>
           <Button onClick={() => navigate('/student-dashboard/lessons')}>
             <ChevronLeft className="w-4 h-4 ml-2" />
-            العودة للدروس
+            العودة للقصص الرقمية
           </Button>
         </div>
       </div>
@@ -459,7 +461,7 @@ const LessonDetails = () => {
                 </div>
                 
                 <h2 className="text-3xl font-bold text-gray-800 mb-3">مبروك! 🎉</h2>
-                <p className="text-lg text-gray-600 mb-2">أحسنت! لقد أكملت الدرس بنجاح</p>
+                <p className="text-lg text-gray-600 mb-2">أحسنت! لقد أكملت  بنجاح</p>
                 <p className="text-gray-500 mb-6">{lesson.name}</p>
                 
                 <div className="flex gap-3 mb-8">
@@ -512,7 +514,7 @@ const LessonDetails = () => {
               <Brain className="w-6 h-6" />
               اختبر معلوماتك
             </h2>
-            <p className="text-white/90 text-sm font-arabic">اختبر فهمك للدرس بطريقة ممتعة</p>
+            <p className="text-white/90 text-sm font-arabic">اختبر فهمك  بطريقة ممتعة</p>
           </div>
           <Button 
             variant="ghost" 
@@ -733,9 +735,9 @@ const LessonDetails = () => {
                   className="flex items-center gap-2"
                 >
                   <ChevronLeft className="w-5 h-5" />
-                  العودة للدروس
+                  العودة للقصص الرقمية
                 </Button>
-                <h1 className="text-xl font-bold text-primary">تفاصيل الدرس</h1>
+                <h1 className="text-xl font-bold text-primary">تفاصيل القصة الرقمية</h1>
               </div>
               
               
@@ -786,7 +788,7 @@ const LessonDetails = () => {
                           ) : (
                             <>
                               <CheckCircle className="w-4 h-4" />
-                              أكملت الدرس
+                              أكملت القصة الرقمية
                             </>
                           )}
                         </Button>
@@ -812,7 +814,7 @@ const LessonDetails = () => {
                       <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
                         <div className="flex items-center gap-2 text-green-700">
                           <CheckCircle className="w-5 h-5" />
-                          <span className="font-medium">أكملت هذا الدرس في {new Date(completionStatus.completedAt).toLocaleDateString('ar-SA')}</span>
+                          <span className="font-medium">أكملت هذه القصة الرقمية في {new Date(completionStatus.completedAt).toLocaleDateString('ar-SA')}</span>
                         </div>
                       </div>
                     )}
@@ -832,7 +834,7 @@ const LessonDetails = () => {
                       </div>
                       <div className="flex items-center gap-2">
                         <Play className="w-4 h-4" />
-                        <span>درس فيديو</span>
+                        <span>قصة رقمية</span>
                       </div>
                     </div>
                   </CardContent>
@@ -848,7 +850,7 @@ const LessonDetails = () => {
                     <ul className="space-y-3 text-muted-foreground">
                       <li className="flex items-start gap-2">
                         <span className="text-primary mt-1">•</span>
-                        <span>شاهد الدرس كاملاً دون انقطاع للمرة الأولى</span>
+                        <span>شاهد القصص الرقمية كاملاً دون انقطاع للمرة الأولى</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <span className="text-primary mt-1">•</span>
@@ -860,7 +862,7 @@ const LessonDetails = () => {
                       </li>
                       <li className="flex items-start gap-2">
                         <span className="text-primary mt-1">•</span>
-                        <span>اضغط على زر "أكملت الدرس" بعد الانتهاء من المشاهدة</span>
+                        <span>اضغط على زر "أكملت " بعد الانتهاء من المشاهدة</span>
                       </li>
                     </ul>
                   </CardContent>
@@ -872,7 +874,7 @@ const LessonDetails = () => {
                 {/* Related Lessons */}
                 <Card className="border-border/50">
                   <CardContent className="p-6">
-                    <h3 className="text-lg font-bold text-foreground mb-4">دروس ذات صلة</h3>
+                    <h3 className="text-lg font-bold text-foreground mb-4">قصص رقمية ذات صلة</h3>
                     <div className="space-y-4">
                       {relatedLessons.map((relatedLesson) => (
                         <div
@@ -910,7 +912,7 @@ const LessonDetails = () => {
                     
                     {relatedLessons.length === 0 && (
                       <p className="text-center text-muted-foreground text-sm py-4">
-                        لا توجد دروس ذات صلة حالياً
+                        لا توجد قصص رقمية ذات صلة حالياً
                       </p>
                     )}
 
@@ -923,7 +925,7 @@ const LessonDetails = () => {
                       }}
                     >
                       <BookOpen className="w-4 h-4 ml-2" />
-                      عرض جميع الدروس
+                      عرض جميع القصص الرقمية
                     </Button>
                   </CardContent>
                 </Card>
@@ -996,7 +998,7 @@ const LessonDetails = () => {
                 {/* Current Lesson Status */}
                 <Card className="border-border/50">
                   <CardContent className="p-6">
-                    <h3 className="text-lg font-bold text-foreground mb-4">حالة هذا الدرس</h3>
+                    <h3 className="text-lg font-bold text-foreground mb-4">حالة القصة </h3>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground">الحالة:</span>

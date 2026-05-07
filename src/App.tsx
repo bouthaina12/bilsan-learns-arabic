@@ -18,7 +18,9 @@ import GamePage from "./pages/GamesPage";
 import FlashcardsGame from "./pages/FlashcardsGame";
 import PuzzleGame from "./pages/PuzzleGame";
 import ForgotPassword from "./pages/ForgotPassword";
-
+import MemoryGame from "./pages/MemoryGame";
+import WordRaceGame from "./pages/WordRaceGame";
+import ListeningGame from "./pages/ListeningGame";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -44,6 +46,10 @@ const App = () => (
           <Route path="/student-dashboard/games" element={<GamePage />} />
           <Route path="/student-dashboard/games/puzzle" element={<PuzzleGame />} />
         <Route path="/student-dashboard/games/flashcards" element={<FlashcardsGame />} />
+        <Route path="/student-dashboard/games/memory" element={<MemoryGame />} />
+        <Route path="/student-dashboard/games/word-race" element={<WordRaceGame />} />
+        <Route path="/student-dashboard/games/listening" element={<ListeningGame />} />
+
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
