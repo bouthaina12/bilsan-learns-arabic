@@ -135,7 +135,7 @@ const StudentDashboard = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full  bg-gradient-to-br from-amber-50 to-pink-50 font-arabic" dir="rtl">
+      <div className="min-h-screen flex w-full bg-gradient-to-br from-amber-50 to-pink-50 font-arabic" dir="rtl">
         <DashboardSidebar 
           userType="student" 
           userName={user?.username}
@@ -144,22 +144,22 @@ const StudentDashboard = () => {
         />
         
         <main className="flex-1 overflow-auto">
-          <header className="h-16 border-b border-border flex items-center px-6 bg-card">
+          <header className="h-14 sm:h-16 border-b border-border flex items-center px-4 sm:px-6 bg-card">
             <SidebarTrigger className="ml-4" />
-            <h1 className="text-2xl font-bold text-primary">لوحة التحكم</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-primary">لوحة التحكم</h1>
           </header>
 
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             {/* Welcome Banner */}
-            <div className="mb-8 bg-gradient-to-l from-pink-100 to-pink-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl p-6 border border-pink-200 dark:border-gray-600">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="text-4xl">👋</div>
-                  <div>
-                    <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
+            <div className="mb-8 bg-gradient-to-l from-pink-100 to-pink-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl p-4 sm:p-6 border border-pink-200 dark:border-gray-600">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-start sm:items-center gap-4 flex-1">
+                  <div className="text-3xl sm:text-4xl flex-shrink-0">👋</div>
+                  <div className="flex-1">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white mb-1 sm:mb-2">
                       مرحباً {user?.username}
                     </h2>
-                    <p className="text-gray-600 dark:text-gray-300">
+                    <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
                       لديك {user?.score || 0} نقطة - استمر في التعلم لتزيد نقاطك! 🌟
                     </p>
                   </div>
@@ -167,14 +167,14 @@ const StudentDashboard = () => {
                 
                 {/* User Rank Badge - Show only if we have ranking data */}
                 {studentsRanking.length > 0 && (
-                  <div className={`px-4 py-2 rounded-full font-bold ${
+                  <div className={`px-3 sm:px-4 py-2 rounded-full font-bold text-sm sm:text-base whitespace-nowrap flex-shrink-0 ${
                     getUserRank() === 1 ? 'bg-gradient-to-r from-yellow-400 to-amber-500 text-white' :
                     getUserRank() <= 3 ? 'bg-gradient-to-r from-blue-400 to-indigo-500 text-white' :
                     'bg-gradient-to-r from-gray-200 to-gray-300 text-gray-700'
                   }`}>
                     {getUserRank() === 1 ? (
                       <div className="flex items-center gap-2">
-                        <Crown className="w-5 h-5" />
+                        <Crown className="w-4 h-4 sm:w-5 sm:h-5" />
                         <span>المركز الأول</span>
                       </div>
                     ) : getUserRank() > 0 ? (
@@ -189,11 +189,11 @@ const StudentDashboard = () => {
 
            
 
-            <div className="grid lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
               {/* Students Ranking */}
               <Card className="border-border/50">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
             🏅 المتصدرون هذا الأسبوع
        </CardTitle>
        

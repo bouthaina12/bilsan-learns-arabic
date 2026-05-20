@@ -13,7 +13,7 @@ import {
   Heart,
   Sparkles
 } from "lucide-react";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import HTMLFlipBook from "react-pageflip";
 import { playSound, playCelebrationSounds, playQuizCompleteSounds, playLessonCompleteSounds } from "@/hooks/useScrollAnimation";
@@ -743,32 +743,23 @@ const handleSuccessfulSubmit = (result: any, isNew: boolean) => {
   }
 
   return (
-    <SidebarProvider>
-      <div 
-        ref={fullScreenRef}
-        className={`min-h-screen w-full font-arabic transition-all duration-300 ${
-          isFullScreen 
-            ? 'bg-gradient-to-br from-gray-900 to-black' 
-            : 'bg-gradient-to-br from-amber-50 to-pink-50 dark:from-gray-900 dark:to-gray-800'
-        }`}
-        dir="rtl"
-      >
-        {!isFullScreen && (
-          <div className="fixed right-0 top-0 h-screen z-40 w-64">
-            <DashboardSidebar 
-              userType="student" 
-              userName={user?.username}
-              progress={65} 
-            />
-          </div>
-        )}
-
-        <div className={isFullScreen ? '' : 'mr-64 min-h-screen'}>
-          {/* شريط الأدوات العلوي */}
-          {!isFullScreen && (
-             <header className="bg-white shadow-sm border-b">
+      <SidebarProvider>
+      <div className="flex min-h-screen w-full bg-background font-arabic" dir="rtl">
+        
+        {/* Dashboard Sidebar Integration */}
+        <DashboardSidebar 
+          userType="student" 
+          userName={user?.username}
+          progress={65} 
+        />
+   {/* Content Area Wrapper */}
+        <div className="flex-1 min-h-screen bg-gradient-to-br from-amber-50 to-pink-50 dark:from-gray-900 dark:to-gray-800 overflow-x-hidden">
+          
+          {/* Header */}
+          <header className="bg-white shadow-sm border-b sticky top-0 z-30">
             <div className="px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-4">
+                <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
                 <Button
                   variant="ghost"
                   onClick={() => navigate('/student-dashboard/stories')}
@@ -779,7 +770,7 @@ const handleSuccessfulSubmit = (result: any, isNew: boolean) => {
                 </Button>
                 <h1 className="text-xl font-bold text-primary"> {story.title}</h1>
               </div>
-                <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2">
                   {story.audio_file && (
                     <Button 
                       variant={isAudioPlaying ? "default" : "outline"}
@@ -803,10 +794,10 @@ const handleSuccessfulSubmit = (result: any, isNew: boolean) => {
                     تحميل PDF
                   </Button>
                 </div>
-              </div>
-            </header>
-                
-          )}
+            </div>
+          </header>
+       
+          
 
           <main className={isFullScreen ? 'h-screen' : 'p-6'}>
             <div className={isFullScreen ? 'h-full flex flex-col' : ''}>

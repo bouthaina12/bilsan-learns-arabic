@@ -87,15 +87,7 @@ const Navbar = () => {
               </Link>
              
               <div className="flex flex-col gap-2 pt-4 border-t border-border/50">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={toggleLanguage}
-                  className="font-arabic gap-2 justify-center"
-                >
-                  <Globe className="w-4 h-4" />
-                  {language === "ar" ? "Deutsch" : "عربي"}
-                </Button>
+               
                 <Button
                   variant="ghost"
                   className="text-lg font-arabic px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 bg-primary hover:bg-primary/90"

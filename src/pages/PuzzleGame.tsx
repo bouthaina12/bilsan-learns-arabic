@@ -5,9 +5,10 @@ import { Card } from '@/components/ui/card';
 import { 
   Home, RotateCw, Trophy, Timer, Star, ChevronRight,
   Volume2, VolumeX, HelpCircle, Award, RefreshCw, 
-  Image as ImageIcon, Grid3x3, LayoutGrid
+  Image as ImageIcon, Grid3x3, LayoutGrid,
+  ChevronLeft
 } from 'lucide-react';
-import { SidebarProvider } from '@/components/ui/sidebar';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
 import { playSound, playSoundSequence } from "@/hooks/useScrollAnimation";
 import { toast } from '@/components/ui/sonner';
@@ -437,45 +438,46 @@ const PuzzleGame = () => {
   const boardSize = getBoardSize();
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen w-full bg-gradient-to-br from-pink-50 to-pink-50 dark:from-gray-900 dark:to-gray-800 font-arabic" dir="rtl">
-        <div className="fixed right-0 top-0 h-screen z-40 w-64">
-          <DashboardSidebar 
-            userType="student" 
-            userName={user?.username}
-            progress={65} 
-          />
-        </div>
 
-        <div className="mr-64 min-h-screen">
-          <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b dark:border-gray-700">
-            <div className="px-6 py-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => navigate('/student-dashboard/games')}
-                    className="flex items-center gap-2"
-                  >
-                    <Home className="w-4 h-4" />
-                    العودة للألعاب
-                  </Button>
-                  <h1 className="text-xl font-bold text-gray-800 dark:text-white">
-                    لعبة الصور المتزلقة
-                  </h1>
-                </div>
-                
-                <div className="flex items-center gap-3">
+
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full bg-background font-arabic" dir="rtl">
+        
+        {/* Dashboard Sidebar Integration */}
+        <DashboardSidebar 
+          userType="student" 
+          userName={user?.username}
+          progress={65} 
+        />
+
+        {/* Content Area Wrapper */}
+        <div className="flex-1 min-h-screen bg-gradient-to-br from-amber-50 to-pink-50 dark:from-gray-900 dark:to-gray-800 overflow-x-hidden">
+          
+          {/* Header */}
+          <header className="bg-white shadow-sm border-b sticky top-0 z-30">
+            <div className="px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate('/student-dashboard/games')}
+                  className="flex items-center gap-2"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                  العودة إلى الألعاب
+                </Button>
+                <h1 className="text-xl font-bold text-primary hidden md:block"> لعبة الصور المتزلقة</h1>
+              </div>
+              <div className="flex items-center gap-2 sm:gap-3">
                   <Button
                     size="sm"
                     variant="ghost"
                     onClick={() => setSoundEnabled(!soundEnabled)}
-                    className="flex items-center gap-1"
+                    className="flex items-center gap-1 text-xs sm:text-sm"
                   >
                     {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                    <span className="hidden sm:inline">{soundEnabled ? 'صوت' : 'بدون'}</span>
                   </Button>
-                  
                   <Button
                     size="sm"
                     variant="ghost"
@@ -486,7 +488,6 @@ const PuzzleGame = () => {
                     {showHint ? 'إخفاء الأرقام' : 'إظهار الأرقام'}
                   </Button>
                 </div>
-              </div>
             </div>
           </header>
 

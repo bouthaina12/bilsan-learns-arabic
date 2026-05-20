@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Home } from 'lucide-react';
-import { SidebarProvider } from '@/components/ui/sidebar';
+import { ChevronLeft, Home } from 'lucide-react';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
 
 const WordRaceGame = () => {
@@ -21,32 +21,37 @@ const WordRaceGame = () => {
   if (!user) return null;
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen w-full bg-gradient-to-br from-pink-50 to-pink-50 dark:from-gray-900 dark:to-gray-800 font-arabic" dir="rtl">
-        <div className="fixed right-0 top-0 h-screen z-40 w-64">
-          <DashboardSidebar 
-            userType="student" 
-            userName={user?.username}
-            progress={65} 
-          />
-        </div>
+<SidebarProvider>
+      <div className="flex min-h-screen w-full bg-background font-arabic" dir="rtl">
+        
+        {/* Dashboard Sidebar Integration */}
+        <DashboardSidebar 
+          userType="student" 
+          userName={user?.username}
+          progress={65} 
+        />
 
-        <div className="mr-64 min-h-screen">
-          <header className="bg-white shadow-sm border-b dark:bg-gray-800 dark:border-gray-700">
+        {/* Content Area Wrapper */}
+        <div className="flex-1 min-h-screen bg-gradient-to-br from-amber-50 to-pink-50 dark:from-gray-900 dark:to-gray-800 overflow-x-hidden">
+          
+          {/* Header */}
+          <header className="bg-white shadow-sm border-b sticky top-0 z-30">
             <div className="px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-4">
+                <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
                 <Button
                   variant="ghost"
                   onClick={() => navigate('/student-dashboard/games')}
                   className="flex items-center gap-2"
                 >
-                  <Home className="w-4 h-4" />
+                  <ChevronLeft className="w-5 h-5" />
                   العودة للألعاب
                 </Button>
                 <h1 className="text-2xl font-bold text-primary">سباق الكلمات</h1>
               </div>
             </div>
           </header>
+   
 
           <main className="p-6">
             <Card className="p-6">

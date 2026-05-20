@@ -6,7 +6,7 @@ import {
   Home, Volume2, VolumeX, RotateCw, ChevronRight, ChevronLeft,
   Star, TrendingUp, CheckCircle, XCircle, Trophy, Timer, Image as ImageIcon
 } from 'lucide-react';
-import { SidebarProvider } from '@/components/ui/sidebar';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
 import { playSound, playCelebrationSounds, playQuizCompleteSounds, playLessonCompleteSounds, playSoundSequence } from "@/hooks/useScrollAnimation";
 import { toast } from '@/components/ui/sonner';
@@ -330,74 +330,72 @@ const FlashcardsGame = () => {
   const currentCard = shuffledCards[currentCardIndex];
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen w-full bg-gradient-to-br from-pink-50 to-pink-50 dark:from-gray-800 dark:to-gray-800 font-arabic" dir="rtl">
-        <div className="fixed right-0 top-0 h-screen z-40 w-64">
-          <DashboardSidebar 
-            userType="student" 
-            userName={user?.username}
-            progress={65} 
-          />
-        </div>
+ <SidebarProvider>
+      <div className="flex min-h-screen w-full bg-background font-arabic" dir="rtl">
+        
+        {/* Dashboard Sidebar Integration */}
+        <DashboardSidebar 
+          userType="student" 
+          userName={user?.username}
+          progress={65} 
+        />
 
-        <div className="mr-64 min-h-screen">
-          {/* شريط التحكم */}
-          <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b dark:border-gray-700">
-            <div className="px-6 py-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => navigate('/student-dashboard/games')}
-                    className="flex items-center gap-2"
-                  >
-                    <Home className="w-4 h-4" />
-                    العودة للألعاب
-                  </Button>
-                  <h1 className="text-xl font-bold text-gray-800 dark:text-white">
-                    البطاقات التعليمية
-                  </h1>
-                </div>
-                
-                <div className="flex items-center gap-3">
+        {/* Content Area Wrapper */}
+        <div className="flex-1 min-h-screen bg-gradient-to-br from-amber-50 to-pink-50 dark:from-gray-900 dark:to-gray-800 overflow-x-hidden">
+          
+          {/* Header */}
+          <header className="bg-white shadow-sm border-b sticky top-0 z-30">
+            <div className="px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate('/student-dashboard/games')}
+                  className="flex items-center gap-2"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                  العودة إلى الألعاب
+                </Button>
+                <h1 className="text-xl font-bold text-primary hidden md:block"> البطاقات التعليمية</h1>
+              </div>
+              <div className="flex items-center gap-2 sm:gap-3">
                   <Button
                     size="sm"
                     variant="ghost"
                     onClick={() => setSoundEnabled(!soundEnabled)}
-                    className="flex items-center gap-1"
+                    className="flex items-center gap-1 text-xs sm:text-sm"
                   >
                     {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                    <span className="hidden sm:inline">{soundEnabled ? 'صوت' : 'بدون'}</span>
                   </Button>
                 </div>
-              </div>
             </div>
           </header>
 
-          <main className="p-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <main className="p-4 sm:p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
               {/* لوحة التحكم */}
-              <div className="space-y-6">
+              <div className="space-y-4 sm:space-y-6">
                 {/* إحصائيات */}
-                <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-0 p-5">
-                  <h2 className="text-lg font-bold text-gray-800 dark:text-white mb-4">إحصائيات اللعبة</h2>
+                <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-0 p-4 sm:p-5">
+                  <h2 className="text-base sm:text-lg font-bold text-gray-800 dark:text-white mb-4">إحصائيات اللعبة</h2>
                   
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-3 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-lg">
-                      <Timer className="w-6 h-6 text-blue-500 mx-auto mb-2" />
-                      <div className="text-2xl font-bold text-gray-800 dark:text-white">{formatTime(gameStats.time)}</div>
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                    <div className="text-center p-2 sm:p-3 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-lg">
+                      <Timer className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500 mx-auto mb-1 sm:mb-2" />
+                      <div className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">{formatTime(gameStats.time)}</div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">الوقت</div>
                     </div>
                     
-                    <div className="text-center p-3 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg">
-                      <CheckCircle className="w-6 h-6 text-green-500 mx-auto mb-2" />
-                      <div className="text-2xl font-bold text-gray-800 dark:text-white">{gameStats.correctAnswers}</div>
+                    <div className="text-center p-2 sm:p-3 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg">
+                      <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-green-500 mx-auto mb-1 sm:mb-2" />
+                      <div className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">{gameStats.correctAnswers}</div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">صحيح</div>
                     </div>
                     
-                    <div className="text-center p-3 bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 rounded-lg">
-                      <XCircle className="w-6 h-6 text-red-500 mx-auto mb-2" />
-                      <div className="text-2xl font-bold text-gray-800 dark:text-white">{gameStats.wrongAnswers}</div>
+                    <div className="text-center p-2 sm:p-3 bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 rounded-lg">
+                      <XCircle className="w-5 h-5 sm:w-6 sm:h-6 text-red-500 mx-auto mb-1 sm:mb-2" />
+                      <div className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">{gameStats.wrongAnswers}</div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">خطأ</div>
                     </div>
                     
@@ -406,23 +404,25 @@ const FlashcardsGame = () => {
                 </Card>
 
                 {/* التحكم */}
-                <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-0 p-5">
-                  <h2 className="text-lg font-bold text-gray-800 dark:text-white mb-4">التحكم</h2>
+                <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-0 p-4 sm:p-5">
+                  <h2 className="text-base sm:text-lg font-bold text-gray-800 dark:text-white mb-4">التحكم</h2>
                   
                   <div className="space-y-3">
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-2 sm:gap-3">
                       <Button
                         onClick={initializeGame}
                         variant="outline"
-                        className="w-full"
+                        size="sm"
+                        className="w-full text-xs sm:text-sm"
                       >
-                        <RotateCw className="w-4 h-4 ml-2" />
+                        <RotateCw className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2" />
                         إعادة تعيين
                       </Button>
                       
                       <Button
                         onClick={startGame}
-                        className="w-full bg-gradient-to-r from-green-500 to-emerald-500"
+                        size="sm"
+                        className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-xs sm:text-sm"
                         disabled={gameState === 'playing' || shuffledCards.length === 0}
                       >
                         ابدأ اللعبة
@@ -430,8 +430,8 @@ const FlashcardsGame = () => {
                     </div>
                     
                     <div className="space-y-2">
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">تصفية حسب الفئة:</p>
-                      <div className="flex flex-wrap gap-2">
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2">تصفية حسب الفئة:</p>
+                      <div className="flex flex-wrap gap-1 sm:gap-2">
                         {categories.map(category => (
                           <Button
                             key={category}
@@ -441,7 +441,7 @@ const FlashcardsGame = () => {
                               playSound('click');
                               setCurrentCategory(category);
                             }}
-                            className={`${
+                            className={`text-xs ${
                               currentCategory === category 
                                 ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white' 
                                 : ''
@@ -619,17 +619,17 @@ const FlashcardsGame = () => {
 
                         {/* البطاقة الرئيسية */}
                         <div 
-                          className={`relative w-full h-96 rounded-xl mb-6 transition-all duration-500 transform ${
+                          className={`relative w-full h-64 sm:h-96 rounded-xl mb-4 sm:mb-6 transition-all duration-500 transform cursor-pointer ${
                             isFlipped ? 'rotate-y-180' : ''
                           }`}
                           style={{ transformStyle: 'preserve-3d' }}
                           onClick={() => setIsFlipped(!isFlipped)}
                         >
                           {/* وجه البطاقة */}
-                          <div className={`absolute inset-0 w-full h-full rounded-xl flex flex-col items-center justify-center p-6 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 ${
+                          <div className={`absolute inset-0 w-full h-full rounded-xl flex flex-col items-center justify-center p-4 sm:p-6 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 ${
                             isFlipped ? 'opacity-0' : 'opacity-100'
                           } transition-opacity duration-300 backface-hidden`}>
-                            <div className="relative w-48 h-48 mb-6 rounded-lg overflow-hidden">
+                            <div className="relative w-32 h-32 sm:w-48 sm:h-48 mb-3 sm:mb-6 rounded-lg overflow-hidden">
                               <img
                                 src={currentCard.imagePath}
                                 alt={currentCard.word}
@@ -642,25 +642,25 @@ const FlashcardsGame = () => {
                             </div>
                             <div className="text-center">
                               
-                              <p className="text-gray-500 dark:text-gray-400">
+                              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                                 انقر على البطاقة لرؤية المعنى
                               </p>
                             </div>
                           </div>
 
                           {/* ظهر البطاقة */}
-                          <div className={`absolute inset-0 w-full h-full rounded-xl flex flex-col items-center justify-center p-6 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-900 transform rotate-y-180 ${
+                          <div className={`absolute inset-0 w-full h-full rounded-xl flex flex-col items-center justify-center p-4 sm:p-6 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-900 transform rotate-y-180 ${
                             isFlipped ? 'opacity-100' : 'opacity-0'
-                          } transition-opacity duration-300 backface-hidden`}>
+                          } transition-opacity duration-300 backface-hidden overflow-y-auto`}>
                             <div className="text-center">
-                              <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-4">
+                              <div className="text-2xl sm:text-3xl font-bold text-green-600 dark:text-green-400 mb-2 sm:mb-4">
                                 {currentCard.meaning}
                               </div>
-                              <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-4">
+                              <div className="text-2xl sm:text-3xl font-bold text-green-600 dark:text-green-400 mb-2 sm:mb-4">
                                 {currentCard.word}
                               </div>
                               
-                              <div className="relative w-32 h-32 mb-6 rounded-lg overflow-hidden mx-auto">
+                              <div className="relative w-24 h-24 sm:w-32 sm:h-32 mb-4 sm:mb-6 rounded-lg overflow-hidden mx-auto">
                                 <img
                                   src={currentCard.imagePath}
                                   alt={currentCard.word}
@@ -673,11 +673,11 @@ const FlashcardsGame = () => {
                               </div>
                               
                               {showTranslation && (
-                                <div className="space-y-3">
-                                  <div className="text-lg text-gray-700 dark:text-gray-300 p-3 bg-white/50 dark:bg-gray-800/50 rounded-lg">
+                                <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
+                                  <div className="text-gray-700 dark:text-gray-300 p-2 sm:p-3 bg-white/50 dark:bg-gray-800/50 rounded-lg">
                                     {currentCard.englishExample}
                                   </div>
-                                  <div className="text-lg text-gray-700 dark:text-gray-300 p-3 bg-white/50 dark:bg-gray-800/50 rounded-lg">
+                                  <div className="text-gray-700 dark:text-gray-300 p-2 sm:p-3 bg-white/50 dark:bg-gray-800/50 rounded-lg">
                                     {currentCard.arabicExample}
                                   </div>
                                 </div>
@@ -687,35 +687,38 @@ const FlashcardsGame = () => {
                         </div>
 
                         {/* أزرار الإجابة */}
-                        <div className="grid grid-cols-2 gap-4 mb-6">
+                        <div className="grid grid-cols-2 gap-2 sm:gap-4 mb-4 sm:mb-6">
                           <Button
                             onClick={markCorrect}
-                            className="h-16 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
-                            size="lg"
+                            className="h-12 sm:h-16 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-xs sm:text-sm"
+                            size="sm"
                           >
-                            <CheckCircle className="w-5 h-5 ml-2" />
-                            صحيح - أعرف الإجابة
+                            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 ml-1 sm:ml-2" />
+                            <span className="hidden sm:inline">صحيح - أعرف الإجابة</span>
+                            <span className="sm:hidden">صحيح</span>
                           </Button>
                           
                           <Button
                             onClick={markWrong}
-                            className="h-16 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600"
-                            size="lg"
+                            className="h-12 sm:h-16 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-xs sm:text-sm"
+                            size="sm"
                           >
-                            <XCircle className="w-5 h-5 ml-2" />
-                            خطأ - أريد رؤية الإجابة
+                            <XCircle className="w-4 h-4 sm:w-5 sm:h-5 ml-1 sm:ml-2" />
+                            <span className="hidden sm:inline">خطأ - أريد رؤية الإجابة</span>
+                            <span className="sm:hidden">خطأ</span>
                           </Button>
                         </div>
 
                         {/* أزرار التنقل */}
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between gap-2 sm:gap-4">
                           <Button
                             onClick={prevCard}
                             variant="outline"
                             disabled={currentCardIndex === 0}
-                            className="flex items-center gap-2"
+                            size="sm"
+                            className="flex-1 text-xs sm:text-sm"
                           >
-                            <ChevronRight className="w-4 h-4" />
+                            <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
                             السابقة
                           </Button>
                           
@@ -723,16 +726,17 @@ const FlashcardsGame = () => {
                             onClick={nextCard}
                             variant="outline"
                             disabled={currentCardIndex >= shuffledCards.length - 1}
-                            className="flex items-center gap-2"
+                            size="sm"
+                            className="flex-1 text-xs sm:text-sm"
                           >
                             التالية
-                            <ChevronLeft className="w-4 h-4" />
+                            <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
                           </Button>
                         </div>
 
                         {/* تلميح */}
-                        <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-lg">
-                          <p className="text-sm text-gray-600 dark:text-gray-300 text-center">
+                        <div className="mt-4 p-2 sm:p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-lg">
+                          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 text-center">
                             💡 انقر على البطاقة لقلبها ورؤية المعنى والتفاصيل
                           </p>
                         </div>
